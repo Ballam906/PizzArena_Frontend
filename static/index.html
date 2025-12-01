@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>PizzaAréna</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f2f2f2;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(135deg, #d0312d, #ea7f3c);
+      color: white;
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #d0312d;
+    }
+
+    .info p {
+      font-size: 1.05rem;
+      margin: 8px 0;
+    }
+
+    .label {
+      font-weight: bold;
+      display: inline-block;
+      width: 130px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>PizzaAréna</h1>
+    <p>Hagyományos ízek, modern köntösben – hamarosan rendelhető online!</p>
+  </header>
+
+  <div class="container">
+
+    <div class="card info">
+      <h2>Alapinformációk</h2>
+      <p><span class="label">Cím:</span> 1111 Budapest, Példa utca 1.</p>
+      <p><span class="label">Telefon:</span> +36 1 234 5678</p>
+      <p><span class="label">Email:</span> info@kisetterem.hu</p>
+      <p><span class="label">Nyitvatartás:</span> H–P: 11–21, Sz: 12–22, V: zárva</p>
+    </div>
+
+    <div class="card">
+      <h2>Online rendelés</h2>
+      <p>
+        A teljes online étlap éppen készül — nemsokára lehetőség lesz közvetlenül a weboldalról rendelni.
+      </p>
+      <p>
+        Addig is várunk szeretettel helyben, vagy érdeklődj telefonon!
+      </p>
+    </div>
+
+  </div>
+
+  <footer>
+    &copy; <span id="year"></span> PizzaAréna — Minden jog fenntartva.
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
