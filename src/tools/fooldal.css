@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.hero-section {
+  width: 100vw;
+  min-height: 500px;
+  background-image: url("image/FooldalMainIMG.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  color: white;
+  text-shadow: 2px 2px 10px black;
+}
+
+.PizzaArenaTextMain{
+    text-align: center; 
+}
+
+.RolunkDivResz{
+    width: 50%;
+    height:300px;
+    justify-content: center;
+    border: 1px solid black;
+    margin: 0 auto;
+}
+
+.RolunkDivResz h2{
+    text-align: left;
+    margin-left: 3%;
+}
+
+.RolunkDivResz p{
+    margin: 3%;
+    text-align:justify;
+}
