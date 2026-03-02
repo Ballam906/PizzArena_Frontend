@@ -32,6 +32,17 @@ namespace PizzaArena_API.Services.OrderItemFolder
             return new { result = item, message = "Tétel hozzáadva a rendeléshez." };
         }
 
+        public async Task<object> GetUserOrders(string userId)
+        {
+            var userOrders = await _context.orders
+                .Where(x => x.User_Id == userId)
+                .Include(o => o.items)          
+                    .ThenInclude(i => i.Product) 
+                .ToListAsync();
+
+            return new { result = userOrders };
+        }
+
         public async Task<object> DeleteOrderItem(int id)
         {
             var item = await _context.order_items.FirstOrDefaultAsync(x => x.Id == id);

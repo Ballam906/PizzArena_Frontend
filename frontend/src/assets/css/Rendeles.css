@@ -161,3 +161,34 @@
   color: rgba(196, 58, 47, 0.95);
   border-color: rgba(196, 58, 47, 0.22);
 }
+.notice{
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  border: 1px solid rgba(0,0,0,.08);
+}
+.notice-success{ background: rgba(0, 200, 0, .08); }
+.notice-error{ background: rgba(255, 0, 0, .08); }
+.notice-info{ background: rgba(0, 120, 255, .08); }
+.notice {
+  margin-top: 1rem;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.notice-success {
+  background-color: #4caf50;
+  color: white;
+}
+
+.notice-error {
+  background-color: #f44336;
+  color: white;
+}
+
+.notice-info {
+  background-color: #2196f3;
+  color: white;
+}

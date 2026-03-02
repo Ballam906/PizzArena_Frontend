@@ -1,3 +1,65 @@
-.FooterListaBeallitasa{
-    color: black;
+/* Alap footer stílus */
+footer {
+  background-color:  rgba(41, 39, 39, 0.92);       /* sötét háttér */
+  color: #fff;                   /* fehér szöveg */
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-around; /* három oszlop */
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Logo oszlop */
+footer ul:first-of-type {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+footer ul:first-of-type img {
+  width: 120px;
+  height: auto;
+}
+
+/* Középső link oszlop */
+.FooterListaBeallitasa {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.FooterListaBeallitasa li {
+  margin-bottom: 8px;
+}
+
+.FooterListaBeallitasa li a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.FooterListaBeallitasa li a:hover {
+  color: #ff9900; /* pl. narancs hover */
+}
+
+/* Üres jobb oszlop */
+footer ul:last-of-type {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Mobilra responsive */
+@media (max-width: 768px) {
+  footer {
+    flex-direction: column;
+    align-items: center;  
+    text-align: center;
+  }
+
+  footer ul {
+    margin-bottom: 15px;
+  }
 }

@@ -1,5 +1,4 @@
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using PizzaArena_API.Data;
@@ -16,7 +15,6 @@ using PizzaArena_API.Services.RestaurantsFolder;
 using PizzaArena_API.Services.RestaurantsFolder.IRestaurantsService;
 using PizzaArena_API.Services.UserFolder;
 using PizzaArena_API.Services.UserFolder.IUserService;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -28,6 +26,7 @@ namespace PizzaArena_API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Services registration
             builder.Services.AddDbContext<PizzArenaDbContext>();
             builder.Services.AddScoped<IUser, UserService>();
             builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
@@ -37,11 +36,16 @@ namespace PizzaArena_API
             builder.Services.AddScoped<IOrder, OrderService>();
             builder.Services.AddScoped<IProduct, ProductService>();
 
-            builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<PizzArenaDbContext>().AddDefaultTokenProviders();
+            builder.Services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<PizzArenaDbContext>()
+                .AddDefaultTokenProviders();
 
-            builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            builder.Services.AddControllers()
+                .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("AuthSettings:JwtOptions"));
+            // JWT configuration
+            builder.Services.Configure<JwtOptions>(
+                builder.Configuration.GetSection("AuthSettings:JwtOptions"));
 
             var settingsSection = builder.Configuration.GetSection("AuthSettings:JwtOptions");
             var secret = settingsSection.GetValue<string>("Secret");
@@ -62,24 +66,30 @@ namespace PizzaArena_API
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
                     ValidIssuer = issuer,
-                    ValidAudience = audience,
                     ValidateAudience = true,
+                    ValidAudience = audience,
                     NameClaimType = "sub"
                 };
             });
 
-            
+            // CORS policy
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://localhost:5173")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            // Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -88,12 +98,11 @@ namespace PizzaArena_API
 
             app.UseHttpsRedirection();
 
+            // Use CORS before Authentication and Authorization
+            app.UseCors("AllowFrontend");
+
             app.UseAuthentication();
-
             app.UseAuthorization();
-
-            
-
 
             app.MapControllers();
 

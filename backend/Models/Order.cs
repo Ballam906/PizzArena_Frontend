@@ -21,6 +21,14 @@ namespace PizzaArena_API.Models
 
         [JsonIgnore]
         public User User { get; set; }
+
         public DateTime OrderTime { get; set; } = DateTime.Now;
+
+        // hozzáadjuk az OrderItem-ek listáját
+        public List<Order_Item> items { get; set; } = new();
+
+        // összeg automatikusan kiszámolva
+        [NotMapped]
+        public int total => items.Sum(i => i.ItemPrice * i.Piece);
     }
 }

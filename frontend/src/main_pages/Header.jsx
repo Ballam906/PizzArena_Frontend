@@ -22,6 +22,11 @@ function Header() {
               Éttermeink
             </Link>
           </li>
+          <li>
+            <Link to="/fiok" className="nav__link">
+              Fiók
+            </Link>
+          </li>
         </ul>
 
         <Link to="/rendeles" className="nav__order-btn">

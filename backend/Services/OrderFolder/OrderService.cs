@@ -2,6 +2,7 @@
 using PizzaArena_API.Data;
 using PizzaArena_API.Models;
 using PizzaArena_API.Services.OrderFolder.Dtos;
+using Microsoft.EntityFrameworkCore;
 using PizzaArena_API.Services.OrderFolder.IOrderService;
 
 namespace PizzaArena_API.Services.OrderFolder
@@ -74,14 +75,11 @@ namespace PizzaArena_API.Services.OrderFolder
         {
             var userOrders = await _context.orders
                 .Where(x => x.User_Id == userId)
+                .Include(o => o.items)           
+                    .ThenInclude(i => i.Product) 
                 .ToListAsync();
 
-            if (userOrders.Any())
-            {
-                return userOrders;
-            }
-
-            return new { message = "Ennek a felhasználónak még nincs rendelése." };
+            return new { result = userOrders };
         }
 
         public async Task<object> UpdateOrder(int id, OrderDto.UpdateOrderDto uporder)

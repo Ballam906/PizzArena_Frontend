@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xafwrTr2xIM=",
+  "dgSpecHash": "t6WwAsMYV6w=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Zephyrus\\Desktop\\vizsgaremek_0205\\PizzArena_vizsgaremek_0127\\backend\\PizzaArena_API.csproj",
+  "projectFilePath": "C:\\Users\\Zephyrus\\Desktop\\pizzarena_ezendolgozok\\backend\\PizzaArena_API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Zephyrus\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
     "C:\\Users\\Zephyrus\\.nuget\\packages\\google.protobuf\\3.32.0\\google.protobuf.3.32.0.nupkg.sha512",

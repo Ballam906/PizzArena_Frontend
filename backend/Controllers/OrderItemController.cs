@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PizzaArena_API.Services.OrderItemFolder.Dtos;
 using PizzaArena_API.Services.OrderItemFolder.IOrderItemService;
+using System.Security.Claims;
 
 namespace PizzaArena_API.Controllers
 {
@@ -30,6 +31,18 @@ namespace PizzaArena_API.Controllers
         public async Task<ActionResult> GetById(int id)
         {
             var result = await _orderItem.GetItemsByOrderId(id);
+            return Ok(result);
+        }
+
+        [HttpGet("MyOrders")]
+        [Authorize]
+        public async Task<ActionResult> GetMyOrders()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var result = await _orderItem.GetUserOrders(userId);
             return Ok(result);
         }
 

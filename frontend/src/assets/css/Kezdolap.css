@@ -1,7 +1,3 @@
-/* ========================================
-   GLOBAL VARIABLES (PAGE-ONLY)
-======================================== */
-
 :root {
   --color-primary: #c43e2f;
   --color-primary-soft: #f7e3e1;
@@ -12,10 +8,6 @@
   --color-border: #e4e4e4;
 }
 
-/* ========================================
-   PAGE BACKGROUND
-======================================== */
-
 body {
   background: #fafafa;
   color: var(--color-text);
@@ -23,13 +15,9 @@ body {
   margin: 0;
 }
 
-/* ========================================
-   HERO
-======================================== */
-
 .hero {
   position: relative;
-  min-height: 45vh;   /* kisebb kép */
+  min-height: 45vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,22 +39,6 @@ body {
   text-align: center;
 }
 
-.hero__eyebrow {
-  background: #ffffffaa;
-  padding: 0.3rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  letter-spacing: 0.15em;
-  color: var(--color-primary);
-  margin-bottom: 0.8rem;
-}
-
-.hero__title {
-  font-size: 2.2rem;
-  margin-bottom: 0.5rem;
-  color: var(--color-text);
-}
-
 .hero__subtitle {
   font-size: 1rem;
   color: var(--color-text-muted);
@@ -78,10 +50,6 @@ body {
   justify-content: center;
   gap: 1rem;
 }
-
-/* ========================================
-   BUTTONS
-======================================== */
 
 .btn {
   padding: 0.7rem 1.2rem;
@@ -109,10 +77,6 @@ body {
   background: var(--color-primary-soft);
 }
 
-/* ========================================
-   SECTIONS
-======================================== */
-
 .section {
   padding: 4rem 0;
 }
@@ -131,9 +95,13 @@ body {
   color: var(--color-text-muted);
 }
 
-/* ========================================
-   CARDS (séf ajánlata + éttermek)
-======================================== */
+.section__title--light {
+  color: white;
+}
+
+.section__subtitle--light {
+  color: #ddd;
+}
 
 .chef-grid,
 .locations-grid {
@@ -189,19 +157,114 @@ body {
   color: var(--color-primary);
 }
 
-/* ========================================
-   RESPONSIVE
-======================================== */
+/* FEATURE szekciók */
+.features-section {
+  background: #fafafa;
+}
 
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.feature--reverse {
+  flex-direction: row-reverse;
+}
+
+.feature img {
+  width: 40%;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+  object-fit: cover;
+}
+
+.feature__text {
+  width: 60%;
+}
+
+.feature__text h2 {
+  color: var(--color-text);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.feature__text p {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+/* CAROUSEL */
+.carousel-section {
+  background: #fafafa;
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.carousel__slide p {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+.carousel__controls button {
+  background: none;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.5rem;
+  margin: 1rem 0.5rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.carousel__controls button:hover {
+  background: var(--color-primary-soft);
+}
+
+/* FOOTER */
+.footer {
+  background: #333;
+  color: #fff;
+  padding: 3rem 0;
+}
+
+.footer__grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1.5rem;
+}
+
+.footer h3 {
+  margin-bottom: 0.8rem;
+}
+
+.footer p {
+  margin: 0.3rem 0;
+}
+
+/* RESPONSIVE */
 @media (max-width: 900px) {
   .chef-grid,
   .locations-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .feature,
+  .feature--reverse {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .feature img, .feature__text {
+    width: 100%;
+  }
 }
 
 @media (max-width: 600px) {
-
   .hero {
     min-height: 40vh;
     padding: 2rem 1.5rem;
@@ -215,4 +278,13 @@ body {
   .container {
     padding-inline: 1.25rem;
   }
+}.carousel__slide {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 1;
+}
+.fade-in {
+  opacity: 1;
+}
+.fade-out {
+  opacity: 0;
 }

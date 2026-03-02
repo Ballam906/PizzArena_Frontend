@@ -1,12 +1,37 @@
-export const API_URL = import.meta.env.VITE_API_URL ?? "";
-
 export async function getTermekek() {
   const token = localStorage.getItem("token");
+
   const res = await fetch("/api/Product", {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 
-  if (!res.ok) throw new Error("API hiba: " + res.status);
-  const data = await res.json();
-  return data.result;
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || ("API hiba: " + res.status));
+  }
+
+  return await res.json();
+}
+
+export async function postOrder(payload) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch("/api/Order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || ("API hiba: " + res.status));
+  }
+
+  // ha a backend nem ad vissza body-t, ez elhasalna -> ezért védjük
+  const ct = res.headers.get("content-type") || "";
+  if (ct.includes("application/json")) return await res.json();
+  return await res.text();
 }

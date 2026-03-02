@@ -1,32 +1,32 @@
 import { useEffect, useState } from "react";
 import { getTermekek } from "../api/client.js";
+import { useCart } from "../context/CartContext.jsx";
 
 export function TermekLista() {
-  const [cartItems, setCartItems] = useState([]);
+  const { add } = useCart();
+
   const [termekek, setTermekek] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     getTermekek()
-      .then((termekek) => setTermekek(termekek))
-      .catch((err) => setError(err?.message ?? String(err)))
-      .finally(() => setLoading(false));
+      .then((x) => {
+        if (!cancelled) setTermekek(x ?? []);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err?.message ?? String(err));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
-
-  function addToCart(t) {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === t.id);
-
-      if (existing) {
-        return prev.map((item) =>
-          item.id === t.id ? { ...item, qty: item.qty + 1 } : item
-        );
-      }
-
-      return [...prev, { id: t.id, nev: t.nev, ar: t.ar, qty: 1 }];
-    });
-  }
 
   if (loading) return <div>Betöltés...</div>;
   if (error) return <div>Hiba: {error}</div>;
@@ -39,36 +39,44 @@ export function TermekLista() {
         gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
       }}
     >
-      {termekek.map((t) => (
-        <div
-          key={t.id}
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: "12px",
-            padding: "1rem",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-          }}
-        >
-          <img
-            src={t.kep_Url}
-            alt={t.nev}
-            style={{
-              width: "100%",
-              height: "150px",
-              objectFit: "cover",
-              borderRadius: "8px",
-              marginBottom: "0.5rem",
-            }}
-          />
-          <h3>{t.nev}</h3>
-          <p style={{ fontSize: "0.9rem", color: "#555" }}>{t.leiras}</p>
-          <strong>{t.ar} Ft</strong>
+      {termekek.map((t) => {
+        const id = t.id ?? t.Id;
+        const nev = t.nev ?? t.name ?? t.Name;
+        const leiras = t.leiras ?? t.description ?? t.Description;
+        const ar = t.ar ?? t.price ?? t.Price;
+        const kep = t.kep_Url ?? t.kepUrl ?? t.image_Url ?? t.Image_Url;
 
-          <button onClick={() => addToCart(t)} style={{ marginTop: "0.5rem" }}>
-            Kosárba
-          </button>
-        </div>
-      ))}
+        return (
+          <div
+            key={id}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: 12,
+              padding: "1rem",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+            }}
+          >
+            <img
+              src={kep}
+              alt={nev}
+              style={{
+                width: "100%",
+                height: 150,
+                objectFit: "cover",
+                borderRadius: 8,
+                marginBottom: "0.5rem",
+              }}
+            />
+            <h3>{nev}</h3>
+            <p style={{ fontSize: "0.9rem", color: "#555" }}>{leiras}</p>
+            <strong>{ar} Ft</strong>
+
+            <button onClick={() => add(t)} style={{ marginTop: "0.5rem" }}>
+              Kosárba
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }

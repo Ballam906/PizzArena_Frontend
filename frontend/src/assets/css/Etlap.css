@@ -1,0 +1,79 @@
+/* Általános stílus az Etlap oldalhoz */
+header {
+  background-color: #f8f8f8;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #ddd;
+}
+
+header ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+header ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+header ul li a:hover {
+  color: #007BFF;
+}
+
+.search-container {
+  margin: 1rem 2rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.search-container input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.termeklista-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem;
+}
+
+.termek-card {
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.termek-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.termek-card img {
+  max-width: 100%;
+  height: 150px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.termek-card h3 {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.termek-card p {
+  color: #666;
+  font-size: 0.9rem;
+}
