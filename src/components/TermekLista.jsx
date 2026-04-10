@@ -3,155 +3,144 @@ import { useCart } from "../context/CartContext.jsx";
 
 export function TermekLista({ category = "Összes termék", sort = "none" }) {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const { add } = useCart();
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchData() {
       try {
-        const res = await fetch("/api/Product");
-        const data = await res.json();
+        const token = localStorage.getItem("token");
 
-        if (Array.isArray(data)) {
-          setProducts(data);
-        } else if (data.result && Array.isArray(data.result)) {
-          setProducts(data.result);
-        } else {
-          setProducts([]);
+        const catRes = await fetch("/api/Category", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+
+        if (!catRes.ok) {
+          throw new Error(`Category HTTP ${catRes.status}`);
         }
+
+        const catData = await catRes.json();
+        setCategories(catData);
+
+        const prodRes = await fetch("/api/Product", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+
+        if (!prodRes.ok) {
+          throw new Error(`Product HTTP ${prodRes.status}`);
+        }
+
+        const prodData = await prodRes.json();
+
+        const finalProducts = Array.isArray(prodData)
+          ? prodData
+          : (prodData.result || []);
+
+        setProducts(finalProducts);
       } catch (error) {
-        console.log("Hiba a termékek lekérésekor:", error);
-        setProducts([]);
+        console.error("Hiba az adatok lekérésekor:", error);
       }
     }
 
-    fetchProducts();
+    fetchData();
   }, []);
 
-  function getCategoryName(product) {
-    const categoryId = product.categoryId ?? product.CategoryId;
-
-    switch (categoryId) {
-      case 1:
-      case 2:
-        return "Pizzák";
-      case 3:
-        return "Hamburgerek";
-      case 4:
-        return "Előétel";
-      case 5:
-        return "Saláták";
-      case 6:
-        return "Tészták";
-      case 7:
-        return "Desszertek";
-      case 8:
-        return "Üdítők";
-      case 9:
-        return "Alkoholos italok";
-      case 10:
-        return "Kávé és Teák";
-      default:
-        return "Ismeretlen kategória";
-    }
+  function getCategoryName(categoryId) {
+    const found = categories.find((c) => c.id === categoryId);
+    return found ? found.name : "Ismeretlen";
   }
 
   let filteredProducts = products.filter((product) => {
-    const productCategory = getCategoryName(product);
-
     if (category === "Összes termék") return true;
 
-    return productCategory.toLowerCase() === category.toLowerCase();
+    const productCatName = getCategoryName(product.categoryId);
+
+    return (
+      productCatName
+        .toLowerCase()
+        .includes(category.toLowerCase().replace("ák", "a")) ||
+      category.toLowerCase().includes(productCatName.toLowerCase())
+    );
   });
 
   filteredProducts = [...filteredProducts].sort((a, b) => {
-    const priceA = a.price ?? a.Price ?? 0;
-    const priceB = b.price ?? b.Price ?? 0;
-    const nameA = a.name ?? a.Name ?? "";
-    const nameB = b.name ?? b.Name ?? "";
-
-    if (sort === "price-asc") return priceA - priceB;
-    if (sort === "price-desc") return priceB - priceA;
-    if (sort === "name-asc") return nameA.localeCompare(nameB);
-    if (sort === "name-desc") return nameB.localeCompare(nameA);
-
+    if (sort === "price-asc") return a.price - b.price;
+    if (sort === "price-desc") return b.price - a.price;
+    if (sort === "name-asc") return a.name.localeCompare(b.name);
+    if (sort === "name-desc") return b.name.localeCompare(a.name);
     return 0;
   });
 
   return (
     <div style={{ marginTop: "20px" }}>
       {filteredProducts.length === 0 ? (
-        <p>Nincs megjeleníthető termék.</p>
+        <p style={{ textAlign: "center", padding: "20px" }}>
+          Nincs termék a(z) "{category}" kategóriában.
+        </p>
       ) : (
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
             gap: "20px"
           }}
         >
-          {filteredProducts.map((product) => {
-            const id = product.Id ?? product.id;
-            const name = product.Name ?? product.name;
-            const price = product.Price ?? product.price;
-            const image = product.image_Url ?? product.imageUrl ?? product.image;
-            const description = product.description ?? product.Description;
-            const categoryName = getCategoryName(product);
-
-            return (
-              <div
-                key={id}
+          {filteredProducts.map((p) => (
+            <div
+              key={p.id}
+              style={{
+                border: "1px solid #ddd",
+                borderRadius: "12px",
+                padding: "15px",
+                background: "#fff",
+                width: "280px",
+                minWidth: "280px",
+                margin: "0 auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px"
+              }}
+            >
+              <img
+                src={
+                  p.image_Url && p.image_Url !== "string"
+                    ? p.image_Url
+                    : "https://via.placeholder.com/150"
+                }
+                alt={p.name}
                 style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "12px",
-                  padding: "15px",
-                  background: "#fff"
+                  width: "100%",
+                  height: "180px",
+                  objectFit: "cover",
+                  borderRadius: "10px"
+                }}
+              />
+              <h3 style={{ marginTop: "10px" }}>{p.name}</h3>
+              <p style={{ fontSize: "0.8rem", color: "#888" }}>
+                {getCategoryName(p.categoryId)}
+              </p>
+              <p style={{ height: "40px", overflow: "hidden" }}>
+                {p.description}
+              </p>
+              <p style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                {p.price} Ft
+              </p>
+              <button
+                onClick={() => add({ ...p, image: p.image_Url })}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  background: "#222",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer"
                 }}
               >
-                {image && (
-                  <img
-                    src={image}
-                    alt={name}
-                    style={{
-                      width: "100%",
-                      height: "180px",
-                      objectFit: "cover",
-                      borderRadius: "10px",
-                      marginBottom: "10px"
-                    }}
-                  />
-                )}
-
-                <h3>{name}</h3>
-                <p><strong>Kategória:</strong> {categoryName}</p>
-                <p>{description}</p>
-                <p><strong>Ár:</strong> {price} Ft</p>
-
-                <button
-                  onClick={() => {
-                    add({
-                      id,
-                      name,
-                      price,
-                      image
-                    });
-                    console.log("Kosárba tett termék:", { id, name, price, image });
-                  }}
-                  style={{
-                    marginTop: "10px",
-                    width: "100%",
-                    padding: "10px",
-                    border: "none",
-                    borderRadius: "10px",
-                    background: "#222",
-                    color: "#fff",
-                    cursor: "pointer"
-                  }}
-                >
-                  Kosárba
-                </button>
-              </div>
-            );
-          })}
+                Kosárba
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>

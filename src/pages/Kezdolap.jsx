@@ -2,16 +2,13 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "../assets/css/Kezdolap.css";
 
-import pizzarenaDivHatter from "../assets/images/KezdolapHEaderDiv.jpg";
-import ASF1_SonkasPizza from "../assets/images/ASF1_SonkasPizza.jpg";
-import ASF2_tbonesteak from "../assets/images/ASF2_tbonesteak.jpg";
-import ASF3_gordonbleu from "../assets/images/ASF3_gordonbleu.jpg";
+import pizzarenaDivHatter from "../assets/images/Hero.png";
 import Etterem from "../assets/images/Etterem.jpg";
 
-import SauceImg from "../assets/images/ASF1_SonkasPizza.jpg";
+import SauceImg from "../assets/images/TokeletesPizza.jpg";
 import PizzArenaIMG from "../assets/images/Etterem.jpg";
-import PotatoImg from "../assets/images/ASF1_SonkasPizza.jpg";
-import HamBunImg from "../assets/images/ASF1_SonkasPizza.jpg";
+import PotatoImg from "../assets/images/OlaszAlapanyag.jpg";
+import HamBunImg from "../assets/images/IzVilag.jpg";
 
 const testimonials = [
   "A PizzAréna elhozta a Olaszország ízvilágát.",
@@ -24,10 +21,69 @@ export default function Kezdolap() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
 
+  const [chefSpecials, setChefSpecials] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [restaurants, setRestaurants] = useState([]);
+  const [restaurantsLoading, setRestaurantsLoading] = useState(true);
+
+ 
+  useEffect(() => {
+    async function fetchChefSpecials() {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("/api/ChefSpecial", {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        setChefSpecials(data);
+      } catch (err) {
+        console.error("Hiba a séf ajánlatának betöltésekor:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchChefSpecials();
+  }, []);
+
+  useEffect(() => {
+    async function fetchRestaurants() {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("/api/Restaurant/", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        setRestaurants(data);
+      } catch (err) {
+        console.error("Hiba az éttermek betöltésekor:", err);
+      } finally {
+        setRestaurantsLoading(false);
+      }
+    }
+
+    fetchRestaurants();
+  }, []);
+
   const prevSlide = () => {
     setFade(false);
     setTimeout(() => {
-      setCurrentIndex(prevIndex =>
+      setCurrentIndex((prevIndex) =>
         prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
       );
       setFade(true);
@@ -37,7 +93,7 @@ export default function Kezdolap() {
   const nextSlide = () => {
     setFade(false);
     setTimeout(() => {
-      setCurrentIndex(prevIndex =>
+      setCurrentIndex((prevIndex) =>
         prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1
       );
       setFade(true);
@@ -48,82 +104,68 @@ export default function Kezdolap() {
     const interval = setInterval(() => {
       nextSlide();
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
 
   return (
     <>
-      <section
-        id="BevezetoKep"
-        className="hero"
-        style={{ backgroundImage: `url(${pizzarenaDivHatter})` }}
+     <section
+      id="BevezetoKep"
+      className="hero"
+      style={{ backgroundImage: `url(${pizzarenaDivHatter})` }}
       >
-        <div className="hero__overlay" />
-        <div className="hero__content">
-          <p className="hero__subtitle">
-            Ropogós tészta, válogatott alapanyagok és barátságos hangulat – legyen
-            szó egy gyors ebédről vagy egy hosszú, beszélgetős estéről.
-          </p>
-          <div className="hero__actions">
-            <Link to="/rendeles" className="btn btn--primary">
-              Rendelés
-            </Link>
-            <Link to="/etlap" className="btn btn--ghost">
-              Böngéssz az étlapon
-            </Link>
-          </div>
+      <div className="hero__overlay" />
+
+      <div className="hero__content hero__content--left">
+        <h1 className="hero__title">PIZZARENA</h1>
+
+        <div className="hero__actions">
+          <Link to="/rendeles" className="btn btn--primary">
+            Rendelés
+          </Link>
+          <Link to="/etlap" className="btn btn--ghost">
+            Böngéssz az étlapon
+          </Link>
         </div>
-      </section>
+      </div>
+    </section>
 
       <section id="ASefAjanlataSzekcio" className="section section--light">
         <div className="container">
           <h2 className="section__title">A séf ajánlata</h2>
           <p className="section__subtitle">
-            Három fogás, amit a séfünk bármikor szívből ajánl.
+            Különleges fogások, amiket a séfünk szívből ajánl.
           </p>
 
           <div className="chef-grid">
-            <article className="card chef-card">
-              <div className="card__image-wrapper">
-                <img src={ASF1_SonkasPizza} alt="Sonkás pizza" className="card__image" />
-              </div>
-              <div className="card__content">
-                <h3 className="card__title">Klasszikus sonkás pizza</h3>
-                <p className="card__text">
-                  Klasszikus olasz pizza ropogós tésztán, gazdagon megpakolva
-                  zamatos sonkával és olvadt sajttal — egyszerű, mégis
-                  ellenállhatatlan ízvilág minden alkalomra.
-                </p>
-              </div>
-            </article>
-
-            <article className="card chef-card">
-              <div className="card__image-wrapper">
-                <img src={ASF2_tbonesteak} alt="T-bone steak" className="card__image" />
-              </div>
-              <div className="card__content">
-                <h3 className="card__title">T-bone steak</h3>
-                <p className="card__text">
-                  Prémium marhahús két textúrával egy szeletben: omlós bélszín
-                  és szaftos hátszín tökéletesre sütve, fűszeres vajjal és
-                  grillezett körettel tálalva.
-                </p>
-              </div>
-            </article>
-
-            <article className="card chef-card">
-              <div className="card__image-wrapper">
-                <img src={ASF3_gordonbleu} alt="Gordon bleu" className="card__image" />
-              </div>
-              <div className="card__content">
-                <h3 className="card__title">Gordon bleu</h3>
-                <p className="card__text">
-                  Ropogósra sült, aranybarna panírban omlós csirkemell, ízletes
-                  sonkával és olvadt sajttal töltve — igazi házias kedvenc,
-                  frissen tálalva.
-                </p>
-              </div>
-            </article>
+            {loading ? (
+              <p>Ajánlatok betöltése...</p>
+            ) : (
+              chefSpecials.map((item) => (
+                <article key={item.id} className="card chef-card">
+                  <div className="card__image-wrapper">
+                    <img
+                      src={item.product?.image_Url || "/placeholder.jpg"}
+                      alt={item.product?.name || "Termék"}
+                      className="card__image"
+                    />
+                  </div>
+                  <div className="card__content">
+                    <h3 className="card__title">{item.product?.name}</h3>
+                    <p className="card__text">{item.product?.description}</p>
+                    {item.customNote && (
+                      <p
+                        className="card__meta"
+                        style={{ fontStyle: "italic", color: "#e67e22" }}
+                      >
+                        Megjegyzés: {item.customNote}
+                      </p>
+                    )}
+                  </div>
+                </article>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -135,7 +177,8 @@ export default function Kezdolap() {
             <div className="feature__text">
               <h2>Nem hiszed el, hogy ez a valóság!</h2>
               <p>
-                  Pizzáinkat egy éven keresztül kisérleteztünk a tökéletes íz eléréshez. 
+                Pizzáinkat egy éven keresztül kisérleteztünk a tökéletes íz
+                eléréshez.
               </p>
             </div>
           </div>
@@ -145,7 +188,8 @@ export default function Kezdolap() {
             <div className="feature__text">
               <h2>PIZZARÉNA ÁLMA</h2>
               <p>
-                Az álmunk egyszerű, az ország legfinomabb pizzáját hozzuk el nektek.
+                Az álmunk egyszerű, az ország legfinomabb pizzáját hozzuk el
+                nektek.
               </p>
             </div>
           </div>
@@ -154,9 +198,7 @@ export default function Kezdolap() {
             <img src={PotatoImg} alt="Dutch Fries" />
             <div className="feature__text">
               <h2>Olasz alapanyagokkal dolgozunk!</h2>
-              <p>
-                  A legnagyobb minőségben hozzuk el a várt minőséget.
-              </p>
+              <p>A legnagyobb minőségben hozzuk el a várt minőséget.</p>
             </div>
           </div>
 
@@ -177,85 +219,68 @@ export default function Kezdolap() {
               <p>"{testimonials[currentIndex]}"</p>
             </div>
             <div className="carousel__controls">
-              <button className="carousel__prev" onClick={prevSlide}>‹</button>
-              <button className="carousel__next" onClick={nextSlide}>›</button>
+              <button className="carousel__prev" onClick={prevSlide}>
+                ‹
+              </button>
+              <button className="carousel__next" onClick={nextSlide}>
+                ›
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section section--dark">
+      <section
+        className="section section--dark"
+        style={{
+          backgroundColor: "#1a1a1a",
+          color: "#ffffff",
+          padding: "50px 0"
+        }}
+      >
         <div className="container">
-          <h2 className="section__title section__title--light">Éttermeink</h2>
-          <p className="section__subtitle section__subtitle--light">
-            Miskolc több pontján várunk, hogy élőben is átélhesd a Pizzarena hangulatot.
+          <h2 className="section__title" style={{ color: "#ffffff" }}>
+            Éttermeink
+          </h2>
+          <p className="section__subtitle" style={{ color: "#eeeeee" }}>
+            Az ország több pontján várunk, hogy élőben is átélhesd a Pizzarena
+            hangulatot.
           </p>
 
           <div className="locations-grid">
-            <article className="card location-card">
-              <div className="card__image-wrapper">
-                <img src={Etterem} alt="Pizzarena Hunyadi János utca 5. étterem" className="card__image"/>
-              </div>
-              <div className="card__content">
-                <h3 className="card__title">Miskolc, Hunyadi János utca 5.</h3>
-                <p className="card__text">
-                 Nyugodtabb környék, családbarát hangulat, terasz jó idő
-                  esetén – ideális hétvégi ebédekhez.
-                </p>
-                <p className="card__meta">Nyitva: H–V 11:00–23:00</p>
-              </div>
-            </article>
-
-            <article className="card location-card">
-              <div className="card__image-wrapper">
-                <img src={Etterem} alt="Pizzarena Kiss tábornok út 6 étterem" className="card__image"/>
-              </div>
-              <div className="card__content">
-                <h3 className="card__title">Miskolc, Kiss tábornok út 6</h3>
-                <p className="card__text">
-                  Modern, fiatalos belső tér, kényelmes ülőhelyek és nagy
-                  társaságokra szabott asztalok.
-                </p>
-                <p className="card__meta">Nyitva: H–V 11:30–23:30</p>
-              </div>
-            </article>
-
-            <article className="card location-card">
-              <div className="card__image-wrapper">
-                <img src={Etterem} alt="Pizzarena Buda étterem" className="card__image"/>
-              </div>
-              <div className="card__content">
-                <h3 className="card__title">Miskolc Pláza 2. emelet</h3>
-                <p className="card__text">
-                   Központi elhelyezkedés, gyors kiszolgálás és barátságos
-                  légkör – tökéletes munka utáni találkozókhoz.
-                </p>
-                <p className="card__meta">Nyitva: H–V 12:00–22:30</p>
-              </div>
-            </article>
+            {restaurantsLoading ? (
+              <p>Éttermek betöltése...</p>
+            ) : (
+              restaurants.map((place) => (
+                <article key={place.id} className="card location-card">
+                  <div className="card__image-wrapper">
+                    <img
+                      src={
+                        place.imageUrl && place.imageUrl.startsWith("http")
+                          ? place.imageUrl
+                          : Etterem
+                      }
+                      alt={place.name}
+                      className="card__image"
+                    />
+                  </div>
+                  <div className="card__content">
+                    <h3 className="card__title">{place.name}</h3>
+                    <p
+                      className="card__text"
+                      style={{ fontWeight: "bold", color: "#ffcc00" }}
+                    >
+                      {place.address}
+                    </p>
+                    <p className="card__text">{place.description}</p>
+                    <p className="card__meta">Nyitva: {place.openingHours}</p>
+                  </div>
+                </article>
+              ))
+            )}
           </div>
         </div>
       </section>
-
-      <footer className="footer">
-        <div className="container">
-          <div className="footer__grid">
-            <div>
-              <h3>Kapcsolat</h3>
-              <p>Email: info@pizzarena.hu</p>
-              <p>Telefon: +36 70 123 4567</p>
-            </div>
-            <div>
-              <h3>Nyitvatartás</h3>
-              <p>H–V 11:00–23:00</p>
-            </div>
-            <div>
-              <h3>Kövess minket</h3>
-              <p>Facebook | Instagram</p>
-            </div>
-          </div>
-        </div>
-      </footer>
     </>
   );
 }

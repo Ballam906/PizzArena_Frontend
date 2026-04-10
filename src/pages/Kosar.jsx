@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
 import { postOrder } from "../api/client.js";
@@ -43,6 +43,7 @@ export default function Kosar() {
   const [postalCode, setPostalCode] = useState("");
   const [street, setStreet] = useState("");
   const [other, setOther] = useState("");
+  const [restaurantId, setRestaurantId] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState(null);
@@ -50,6 +51,30 @@ export default function Kosar() {
 
   const shipping = useMemo(() => (items.length ? 490 : 0), [items.length]);
   const grandTotal = useMemo(() => total + shipping, [total, shipping]);
+
+  const [restaurants, setRestaurants] = useState([]);
+  const [restaurantsLoading, setRestaurantsLoading] = useState(true);
+  
+  useEffect(() => {
+    async function fetchRestaurants() {
+      try {
+        const res = await fetch("/api/Restaurant");
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        setRestaurants(data);
+      } catch (err) {
+        console.error("Hiba az éttermek betöltésekor:", err);
+      } finally {
+        setRestaurantsLoading(false);
+      }
+    }
+
+    fetchRestaurants();
+  }, []);
 
   async function submitOrder() {
     setApiError(null);
@@ -64,6 +89,11 @@ export default function Kosar() {
 
     if (!items.length) {
       setApiError("A kosár üres.");
+      return;
+    }
+
+    if (!restaurantId) {
+      setApiError("Válassz éttermet.");
       return;
     }
 
@@ -85,12 +115,12 @@ export default function Kosar() {
       city: city.trim(),
       street: street.trim(),
       other: other.trim(),
-      userid: userId,
-      orderItems: items.map((x) => ({
-        ItemPrice: Number(x.price) || 0,
-        Piece: x.qty,
-        Order_Id: 0,
-        Item_Id: x.id
+      userId: userId,
+      restaurantId: Number(restaurantId),
+      items: items.map((x) => ({
+        productId: x.id,
+        piece: x.qty,
+        itemPrice: Number(x.price) || 0
       }))
     };
 
@@ -374,6 +404,29 @@ export default function Kosar() {
               </h2>
 
               <div style={{ display: "grid", gap: "12px" }}>
+
+                <select
+  value={restaurantId}
+  onChange={(e) => setRestaurantId(e.target.value)}
+  style={inputStyle}
+  disabled={restaurantsLoading}
+>
+  <option value="">
+    {restaurantsLoading ? "Éttermek betöltése..." : "Válassz éttermet"}
+  </option>
+  {restaurants.map((r) => (
+    <option key={r.id} value={r.id}>
+      {r.name} - {r.address}
+    </option>
+  ))}
+</select>
+                <input
+                  placeholder="Étterem ID"
+                  value={restaurantId}
+                  onChange={(e) => setRestaurantId(e.target.value)}
+                  style={inputStyle}
+                />
+                
                 <input
                   placeholder="Név (opcionális)"
                   value={customerName}

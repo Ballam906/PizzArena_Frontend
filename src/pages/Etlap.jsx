@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TermekLista } from "../components/TermekLista.jsx";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
@@ -7,26 +7,38 @@ import "../assets/css/Etlap.css";
 function Etlap() {
   const [selectedCategory, setSelectedCategory] = useState("Összes termék");
   const [selectedSort, setSelectedSort] = useState("none");
+  const [categories, setCategories] = useState(["Összes termék"]);
 
   const { items } = useCart();
 
-  let itemCount = 0;
-  for (let i = 0; i < items.length; i++) {
-    itemCount += items[i].qty;
-  }
+  const itemCount = items.reduce((total, item) => total + item.qty, 0);
 
-  const categories = [
-    "Összes termék",
-    "Pizzák",
-    "Hamburgerek",
-    "Üdítők",
-    "Desszertek",
-    "Tészták",
-    "Saláták",
-    "Levesek*",
-    "Köretek*",
-    "Szószok*"
-  ];
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("/api/Category", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        const apiCategories = data.result || data || [];
+        const categoryNames = apiCategories.map((c) => c.name ?? c.Name);
+
+        setCategories(["Összes termék", ...categoryNames]);
+      } catch (error) {
+        console.error("Hiba a kategóriák betöltésekor:", error);
+      }
+    }
+
+    fetchCategories();
+  }, []);
 
   return (
     <>
@@ -56,20 +68,33 @@ function Etlap() {
               border: "1px solid #ccc",
               backgroundColor: selectedCategory === cat ? "#222" : "#fff",
               color: selectedCategory === cat ? "#fff" : "#000",
-              cursor: "pointer"
+              cursor: "pointer",
+              transition: "all 0.2s"
             }}
           >
             {cat}
           </button>
         ))}
 
-        <div style={{ marginLeft: "10px" }}>
-          <label className="Kateg" style={{ marginRight: "8px" }}>Rendezés:</label>
+        <div
+          style={{
+            marginLeft: "10px",
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          <label className="Kateg" style={{ marginRight: "8px" }}>
+            Rendezés:
+          </label>
           <select
             className="Kateg"
             value={selectedSort}
             onChange={(e) => setSelectedSort(e.target.value)}
-            style={{ padding: "5px", borderRadius: "8px" }}
+            style={{
+              padding: "5px",
+              borderRadius: "8px",
+              border: "1px solid #ccc"
+            }}
           >
             <option value="none">Nincs</option>
             <option value="price-asc">Ár szerint növekvő</option>
@@ -97,7 +122,6 @@ function Etlap() {
             }}
           >
             🛒
-
             {itemCount > 0 && (
               <span
                 style={{

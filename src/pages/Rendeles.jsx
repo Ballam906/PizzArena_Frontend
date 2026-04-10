@@ -45,58 +45,53 @@ function Rendeles() {
     }
   }
 
-  async function handleLogin(e) {
-    e.preventDefault();
-    clearNotice();
+async function handleLogin(e) {
+  e.preventDefault();
+  clearNotice();
 
-    const payload = {
-      userName: loginUsername.trim(),
-      password: loginPassword
-    };
+  const payload = {
+    userName: loginUsername.trim(),
+    password: loginPassword
+  };
 
-    let res;
-    try {
-      res = await fetch("/api/User/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-    } catch {
-      show("error", "Hálózati hiba. Ellenőrizd a backend futását.");
-      return;
-    }
-
-    const data = await readJsonSafe(res);
-    console.log("LOGIN RESPONSE:", data);
-
-    if (!res.ok) {
-      show("error", data?.message || data?.raw || "Sikertelen bejelentkezés.");
-      return;
-    }
-
-    if (!data.token) {
-      show("error", data?.message || data?.raw || "Nem sikerült bejelentkezni (nincs token).");
-      return;
-    }
-
-   if (data?.token) {
-      localStorage.setItem("token", data.token);
-
-      localStorage.setItem(
-        "userData",
-        JSON.stringify({
-          CustomerName: data?.result?.userName || "",
-          CustomerEmail: data?.result?.email || ""
-        })
-      );
-    } else {
-      show("error", data?.message || "Sikertelen bejelentkezés.");
-      return;
-    }
-
-    show("success", data?.message || "Sikeres bejelentkezés!");
-    navigate("/etlap");
+  let res;
+  try {
+    res = await fetch("/api/User/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  } catch {
+    show("error", "Hálózati hiba. Ellenőrizd a backend futását.");
+    return;
   }
+
+  const data = await readJsonSafe(res);
+  console.log("LOGIN RESPONSE:", data);
+
+  if (!res.ok) {
+    show("error", data?.message || data?.raw || "Sikertelen bejelentkezés.");
+    return;
+  }
+
+  if (!data?.token) {
+    show("error", data?.message || data?.raw || "Nem sikerült bejelentkezni (nincs token).");
+    return;
+  }
+
+  localStorage.setItem("token", data.token);
+
+  localStorage.setItem(
+    "userData",
+    JSON.stringify({
+      CustomerName: data?.result?.userName || "",
+      CustomerEmail: data?.result?.email || ""
+    })
+  );
+
+  show("success", data?.message || "Sikeres bejelentkezés!");
+  navigate("/etlap");
+}
 
   async function handleRegister(e) {
     e.preventDefault();

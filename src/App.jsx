@@ -7,6 +7,7 @@ import Rolunk from "./pages/Rolunk.jsx";
 import Rendeles from "./pages/Rendeles.jsx";
 import Kosar from "./pages/Kosar.jsx";
 import Fiok from "./pages/Fiokosszesito.jsx";
+import Adatvedelem from "./pages/Adatvedelem.jsx";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/rolunk" element={<Rolunk />} />
         <Route path="/fiok" element={<Fiok />} />
         <Route path="/rendeles" element={<Rendeles />} />
+        <Route path="/adatvedelem" element={<Adatvedelem />} />
       </Routes>
       <Footer />
     </>

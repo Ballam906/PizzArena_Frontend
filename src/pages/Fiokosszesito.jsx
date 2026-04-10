@@ -175,12 +175,12 @@ const Fiokosszesito = () => {
           <strong>Email:</strong> {userData.CustomerEmail}
         </p>
 
-        <button
+        {/* <button
           onClick={toggleEdit}
           style={{ padding: "6px 12px", marginTop: 8 }}
         >
           {editingName ? "Mentés" : "Szerkesztés"}
-        </button>
+        </button> */}
       </section>
 
       <section style={{ marginBottom: 20 }}>

@@ -1,32 +1,27 @@
 import "../assets/css/Rolunk.css";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react"; // 1. Hookok importálása
 
 export default function Rolunk() {
   const navigate = useNavigate();
+  
+  // 2. State-ek létrehozása
+  const [ettermeink, setEttermeink] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const ettermeink = [
-    {
-      name: "Blaha",
-      desc:
-        "Központi elhelyezkedés, gyors kiszolgálás és barátságos légkör – tökéletes munka utáni találkozókhoz.",
-      open: "Nyitva: H–V 11:00–23:00",
-      img: "/images/etterem1.jpg", 
-    },
-    {
-      name: "Corvin",
-      desc:
-        "Modern, fiatalos belső tér, kényelmes ülőhelyek és nagy társaságokra szabott asztalok.",
-      open: "Nyitva: H–V 11:30–23:30",
-      img: "/images/etterem2.jpg",
-    },
-    {
-      name: "Buda",
-      desc:
-        "Nyugodtabb környék, családbarát hangulat, terasz jó idő esetén – ideális hétvégi ebédekhez.",
-      open: "Nyitva: H–V 12:00–22:30",
-      img: "/images/etterem3.jpg",
-    },
-  ];
+  // 3. Adatlekérés az API-ból
+  useEffect(() => {
+    fetch("/api/Restaurant/")
+      .then((res) => res.json())
+      .then((data) => {
+        setEttermeink(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Hiba:", err);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="rolunk-page">
@@ -44,8 +39,7 @@ export default function Rolunk() {
               <h2>Miért pont nálunk?</h2>
               <p>
                 Nálunk nem kell kompromisszum: a minőség és a gyorsaság együtt
-                működik. A kedvenceket stabilan ugyanazzal az ízzel kapod, a
-                szezonális újdonságokkal pedig néha rá is csavarunk a sztorira.
+                működik. A kedvenceket stabilan ugyanazzal az ízzel kapod...
               </p>
             </div>
 
@@ -69,36 +63,48 @@ export default function Rolunk() {
           </p>
 
           <div className="place-grid">
-            {ettermeink.map((p) => (
-              <article className="place-card" key={p.name}>
-                <div className="place-imgWrap">
-                  <img className="place-img" src={p.img} alt={p.name} />
-                </div>
-
-                <div className="place-body">
-                  <h3 className="place-title">{p.name}</h3>
-                  <p className="place-desc">{p.desc}</p>
-                  <p className="place-open">{p.open}</p>
-
-                  <div className="place-actions">
-                    <button
-                      className="btn btn-outline"
-                      type="button"
-                      onClick={() => navigate("/rendeles")}
-                    >
-                      Ide rendelek
-                    </button>
-                    <button
-                      className="btn btn-ghost"
-                      type="button"
-                      onClick={() => navigate("/etlap")}
-                    >
-                      Étlap
-                    </button>
+            {loading ? (
+              <p>Betöltés...</p>
+            ) : (
+              ettermeink.map((p) => (
+                <article className="place-card" key={p.id}> {/* p.name helyett p.id a biztosabb key */}
+                  <div className="place-imgWrap">
+                    <img 
+                      className="place-img" 
+                      src={p.imageUrl && p.imageUrl.startsWith("http") ? p.imageUrl : "/images/etterem1.jpg"} 
+                      alt={p.name} 
+                    />
                   </div>
-                </div>
-              </article>
-            ))}
+
+                  <div className="place-body">
+                    <h3 className="place-title">{p.name}</h3>
+                    {/* Itt megjelenítjük a címet is, mert a JSON-ben benne van */}
+                    <p className="place-address" style={{fontSize: "0.9rem", color: "#e67e22", marginBottom: "5px"}}>
+                      {p.address}
+                    </p>
+                    <p className="place-desc">{p.description}</p>
+                    <p className="place-open">Nyitva: {p.openingHours}</p>
+
+                    <div className="place-actions">
+                      <button
+                        className="btn btn-outline"
+                        type="button"
+                        onClick={() => navigate("/rendeles")}
+                      >
+                        Ide rendelek
+                      </button>
+                      <button
+                        className="btn btn-ghost"
+                        type="button"
+                        onClick={() => navigate("/etlap")}
+                      >
+                        Étlap
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -112,7 +118,6 @@ export default function Rolunk() {
                 Válassz kedvencedet az étlapról, és add le a rendelésed pár kattintással.
               </p>
             </div>
-
             <button className="btn btn-primary" onClick={() => navigate("/rendeles")}>
               Add le a rendelésed!
             </button>

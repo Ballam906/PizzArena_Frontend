@@ -1,6 +1,8 @@
 export async function getTermekek() {
   const token = localStorage.getItem("token");
 
+  console.log("LS TOKEN:", localStorage.getItem("token"));
+
   const res = await fetch("/api/Product", {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
@@ -15,10 +17,15 @@ export async function getTermekek() {
 
 export async function postOrder(data) {
   const token = localStorage.getItem("token");
+  
+  console.log("POSTORDER TOKEN:", token);
+  console.log("POSTORDER AUTH HEADER:", `Bearer ${token}`);
+  
+  if (!token) {
+    throw new Error("Nincs token a localStorage-ben.");
+  }
 
-  console.log("TOKEN POSTORDER:", token);
-
-  const res = await fetch("https://localhost:7218/api/Order", {
+  const res = await fetch("https://localhost:7218/api/Order/FullOrder", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

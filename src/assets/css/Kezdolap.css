@@ -30,7 +30,6 @@ body {
 .hero__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.55);
 }
 
 .hero__content {
@@ -284,4 +283,65 @@ body {
 }
 .fade-out {
   opacity: 0;
+}
+.hero {
+  position: relative;
+  min-height: 65vh; /* nagyobb, hogy legyen tér */
+  display: flex;
+  align-items: flex-end; /* ALULRA tol */
+  justify-content: flex-start; /* BALRA tol */
+  padding: 4rem 3rem;
+  background-size: cover;
+  background-position: center;
+}
+
+/* sötét overlay hogy látszódjon a szöveg */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.7),
+    rgba(0,0,0,0.2),
+    transparent
+  );
+}
+
+/* BAL ALSÓ BLOKK */
+.hero__content--left {
+  position: relative;
+  max-width: 500px;
+  text-align: left;
+  color: white;
+}
+
+/* NAGY CÍM */
+.hero__title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+/* SZÖVEG */
+.hero__subtitle {
+  color: #ddd;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* MOBIL */
+@media (max-width: 600px) {
+  .hero {
+    padding: 2rem 1.5rem;
+    min-height: 65vh;
+  }
+
+  .hero__title {
+    font-size: 2.2rem;
+  }
+
+  .hero__content--left {
+    max-width: 100%;
+  }
 }
