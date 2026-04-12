@@ -1,0 +1,168 @@
+.fiok-wrapper {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-sizing: border-box;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.fiok-title {
+  margin: 0 0 20px 0;
+  font-size: 28px;
+  color: #222;
+}
+
+.fiok-loading {
+  text-align: center;
+  padding: 30px;
+  font-size: 18px;
+}
+
+.fiok-section {
+  margin-bottom: 24px;
+  padding: 18px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #ececec;
+}
+
+.fiok-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.fiok-section h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #222;
+}
+
+.fiok-text {
+  margin: 10px 0;
+  color: #333;
+  line-height: 1.5;
+}
+
+.fiok-input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.fiok-input:focus {
+  border-color: #888;
+}
+
+.fiok-edit-btn {
+  padding: 10px 14px;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.fiok-edit-btn:hover {
+  background: #111;
+}
+
+.fiok-notice {
+  margin-bottom: 15px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.fiok-notice-success {
+  background: #4caf50;
+}
+
+.fiok-notice-error {
+  background: #f44336;
+}
+
+.fiok-notice-info {
+  background: #2196f3;
+}
+
+.fiok-empty {
+  margin: 0;
+  color: #666;
+}
+
+.fiok-table-wrapper {
+  overflow-x: auto;
+}
+
+.fiok-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+
+.fiok-table thead tr {
+  text-align: left;
+  border-bottom: 2px solid #ccc;
+}
+
+.fiok-table th,
+.fiok-table td {
+  padding: 12px 8px;
+}
+
+.fiok-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+.fiok-logout-btn {
+  padding: 12px 20px;
+  background-color: #ff0000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.fiok-logout-btn:hover {
+  background-color: #ff0000;
+}
+
+@media (max-width: 768px) {
+  .fiok-wrapper {
+    margin: 20px 12px;
+    padding: 18px;
+  }
+
+  .fiok-title {
+    font-size: 24px;
+  }
+
+  .fiok-section {
+    padding: 14px;
+  }
+
+  .fiok-section h3 {
+    font-size: 18px;
+  }
+
+  .fiok-edit-btn,
+  .fiok-logout-btn {
+    width: 100%;
+  }
+
+  .fiok-section-header {
+    align-items: stretch;
+  }
+}

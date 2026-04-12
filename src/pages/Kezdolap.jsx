@@ -274,6 +274,7 @@ export default function Kezdolap() {
                     </p>
                     <p className="card__text">{place.description}</p>
                     <p className="card__meta">Nyitva: {place.openingHours}</p>
+                    <p className="card__tel">Elérhetőség: {place.contactPhone}</p>
                   </div>
                 </article>
               ))

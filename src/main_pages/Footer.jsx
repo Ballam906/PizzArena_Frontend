@@ -4,35 +4,39 @@ import "../assets/css/Footer.css";
 import pizzarenaLogo from "../assets/images/pizzarena_logo.png";
 
 function Footer() {
-  const [settings, setSettings] = useState({
-    contactEmail: "info@pizzarena.hu",
-    deliveryTime: "30-45 perc",
-    facebookUrl: "#",
-    instagramUrl: "#"
-  });
+  const [settings, setSettings] = useState(null);
 
   useEffect(() => {
     fetchGlobalSettings();
   }, []);
 
-  async function fetchGlobalSettings() {
-    try {
-      const res = await fetch("/api/GlobalSettings", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
+async function fetchGlobalSettings() {
+  try {
+    const res = await fetch("/api/GlobalSettings", {
+      method: "GET"
+    });
 
-      if (!res.ok) {
-        throw new Error("Nem sikerült lekérni a globális beállításokat.");
-      }
+    console.log("status:", res.status);
 
-      const data = await res.json();
-      setSettings(data);
-    } catch (error) {
-      console.error("Hiba a GlobalSettings lekérésekor:", error);
+    if (!res.ok) {
+      throw new Error("Nem sikerült lekérni a GlobalSettings adatokat.");
     }
+
+    const text = await res.text();
+
+    const data = JSON.parse(text);
+
+    setSettings(data);
+  } catch (error) {
+    console.error("Hiba a GlobalSettings lekérésekor:", error);
+  }
+}
+  function formatUrl(url) {
+    if (!url) return "#";
+    if (!url.startsWith("http")) {
+      return "https://" + url;
+    }
+    return url;
   }
 
   return (
@@ -66,8 +70,7 @@ function Footer() {
           <h3>Kapcsolat</h3>
           <ul>
             <li>📍 Magyarország</li>
-            <li>🚚 Szállítási idő: {settings.deliveryTime} perc.</li>
-            <li>✉️ {settings.contactEmail}</li>
+            <li>✉️ {settings?.contactEmail || "Betöltés..."}</li>
           </ul>
         </div>
 
@@ -75,16 +78,15 @@ function Footer() {
           <h3>Kövess minket</h3>
           <ul>
             <li>
-              <a href={settings.facebookUrl} target="_blank" rel="noreferrer">
+              <a href={settings?.facebookUrl || "#"} target="_blank" rel="noreferrer">
                 Facebook
               </a>
             </li>
             <li>
-              <a href={settings.instagramUrl} target="_blank" rel="noreferrer">
+              <a href={settings?.instagramUrl || "#"} target="_blank" rel="noreferrer">
                 Instagram
               </a>
             </li>
-            <li><a href="#">TikTok</a></li>
           </ul>
         </div>
       </div>
@@ -93,7 +95,7 @@ function Footer() {
         <p>© 2026 PizzArena. Minden jog fenntartva.</p>
         <div className="footer-bottom-links">
           <Link to="/adatvedelem">Adatvédelem</Link>
-          <Link to="/adatvedelem">ÁSZF</Link>
+          <Link to="/aszf">ÁSZF</Link>
         </div>
       </div>
     </footer>

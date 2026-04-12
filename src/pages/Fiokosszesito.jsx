@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../assets/css/Fiok.css";
 
 const Fiokosszesito = () => {
   const navigate = useNavigate();
@@ -51,8 +52,6 @@ const Fiokosszesito = () => {
       try {
         clearNotice();
 
-        console.log("TOKEN:", token);
-
         const res = await fetch("https://localhost:7218/api/Order/MyOrdersWithItems", {
           method: "GET",
           headers: {
@@ -60,10 +59,7 @@ const Fiokosszesito = () => {
           }
         });
 
-        console.log("MYORDERS STATUS:", res.status);
-
         const text = await res.text();
-        console.log("MYORDERS RAW RESPONSE:", text);
 
         let data;
         try {
@@ -120,112 +116,78 @@ const Fiokosszesito = () => {
   }
 
   if (!userData) {
-    return <p>Betöltés...</p>;
+    return <p className="fiok-loading">Betöltés...</p>;
   }
 
   return (
-    <div
-      style={{
-        maxWidth: 700,
-        margin: "0 auto",
-        padding: 20,
-        background: "#f9f9f9",
-        borderRadius: 8
-      }}
-    >
-      <h2>Felhasználói fiók</h2>
+    <div className="fiok-wrapper">
+      <h2 className="fiok-title">Felhasználói fiók</h2>
 
       {notice && (
-        <div
-          style={{
-            marginBottom: 15,
-            padding: "8px 12px",
-            borderRadius: 4,
-            fontWeight: "bold",
-            backgroundColor:
-              notice.type === "success"
-                ? "#4caf50"
-                : notice.type === "error"
-                ? "#f44336"
-                : "#2196f3",
-            color: "#fff"
-          }}
-        >
+        <div className={`fiok-notice fiok-notice-${notice.type}`}>
           {notice.text}
         </div>
       )}
 
-      <section style={{ marginBottom: 20 }}>
-        <h3>Regisztrációs adatok</h3>
+      <section className="fiok-section">
+        <div className="fiok-section-header">
+          <h3>Regisztrációs adatok</h3>
+        </div>
 
         {editingName ? (
           <input
             type="text"
             value={userData.CustomerName || ""}
             onChange={handleNameChange}
-            style={{ width: "100%", padding: 8, marginBottom: 8 }}
+            className="fiok-input"
           />
         ) : (
-          <p>
-            <strong>Név:</strong> {userData.CustomerName}
+          <p className="fiok-text">
+            <strong>Név:</strong> {userData.CustomerName || "-"}
           </p>
         )}
 
-        <p>
-          <strong>Email:</strong> {userData.CustomerEmail}
+        <p className="fiok-text">
+          <strong>Email:</strong> {userData.CustomerEmail || "-"}
         </p>
-
-        {/* <button
-          onClick={toggleEdit}
-          style={{ padding: "6px 12px", marginTop: 8 }}
-        >
-          {editingName ? "Mentés" : "Szerkesztés"}
-        </button> */}
       </section>
 
-      <section style={{ marginBottom: 20 }}>
+      <section className="fiok-section">
         <h3>Rendelés előzmények</h3>
 
         {orders.length === 0 ? (
-          <p>Nincs rendelésed még.</p>
+          <p className="fiok-empty">Nincs rendelésed még.</p>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ textAlign: "left", borderBottom: "2px solid #ccc" }}>
-                <th>Dátum</th>
-                <th>Név</th>
-                <th>Összeg</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order, idx) => (
-                <tr key={idx} style={{ borderBottom: "1px solid #eee" }}>
-                  <td>
-                    {order.orderTime
-                      ? new Date(order.orderTime).toLocaleString()
-                      : "-"}
-                  </td>
-                  <td>{order.customerName || order.CustomerName || "-"}</td>
-                  <td>{getOrderTotal(order.orderItems || order.OrderItems)} Ft</td>
+          <div className="fiok-table-wrapper">
+            <table className="fiok-table">
+              <thead>
+                <tr>
+                  <th>Dátum</th>
+                  <th>Név</th>
+                  <th>Összeg</th>
+                  <th>Rendelés státusz</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {orders.map((order, idx) => (
+                  <tr key={idx}>
+                    <td>
+                      {order.orderTime
+                        ? new Date(order.orderTime).toLocaleString()
+                        : "-"}
+                    </td>
+                    <td>{order.customerName || order.CustomerName || "-"}</td>
+                    <td>{getOrderTotal(order.orderItems || order.OrderItems)} Ft</td>
+                    <td>{order.status || "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
 
-      <button
-        onClick={handleLogout}
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#837777",
-          color: "#fff",
-          border: "none",
-          borderRadius: 4,
-          cursor: "pointer",
-          marginBottom: 10
-        }}
-      >
+      <button className="fiok-logout-btn" onClick={handleLogout}>
         Kijelentkezés
       </button>
     </div>

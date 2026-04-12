@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext.jsx";
+import "../assets/css/TermekLista.css";
 
 export function TermekLista({ category = "Összes termék", sort = "none" }) {
   const [products, setProducts] = useState([]);
@@ -72,35 +73,15 @@ export function TermekLista({ category = "Összes termék", sort = "none" }) {
   });
 
   return (
-    <div style={{ marginTop: "20px" }}>
+    <div className="products-container">
       {filteredProducts.length === 0 ? (
-        <p style={{ textAlign: "center", padding: "20px" }}>
+        <p className="products-empty">
           Nincs termék a(z) "{category}" kategóriában.
         </p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "20px"
-          }}
-        >
+        <div className="products-grid">
           {filteredProducts.map((p) => (
-            <div
-              key={p.id}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "12px",
-                padding: "15px",
-                background: "#fff",
-                width: "280px",
-                minWidth: "280px",
-                margin: "0 auto",
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px"
-              }}
-            >
+            <div key={p.id} className="product-card">
               <img
                 src={
                   p.image_Url && p.image_Url !== "string"
@@ -108,34 +89,24 @@ export function TermekLista({ category = "Összes termék", sort = "none" }) {
                     : "https://via.placeholder.com/150"
                 }
                 alt={p.name}
-                style={{
-                  width: "100%",
-                  height: "180px",
-                  objectFit: "cover",
-                  borderRadius: "10px"
-                }}
+                className="product-image"
               />
-              <h3 style={{ marginTop: "10px" }}>{p.name}</h3>
-              <p style={{ fontSize: "0.8rem", color: "#888" }}>
+
+              <h3 className="product-title">{p.name}</h3>
+
+              <p className="product-category">
                 {getCategoryName(p.categoryId)}
               </p>
-              <p style={{ height: "40px", overflow: "hidden" }}>
+
+              <p className="product-description">
                 {p.description}
               </p>
-              <p style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                {p.price} Ft
-              </p>
+
+              <p className="product-price">{p.price} Ft</p>
+
               <button
                 onClick={() => add({ ...p, image: p.image_Url })}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  background: "#222",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer"
-                }}
+                className="product-button"
               >
                 Kosárba
               </button>

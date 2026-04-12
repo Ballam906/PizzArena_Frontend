@@ -150,6 +150,11 @@ body {
   line-height: 1.5;
 }
 
+.card__tel{
+   color: black;
+  line-height: 1.5;
+}
+
 .card__meta {
   margin-top: 0.5rem;
   font-size: 0.9rem;

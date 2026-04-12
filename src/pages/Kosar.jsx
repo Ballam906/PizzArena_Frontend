@@ -54,7 +54,9 @@ export default function Kosar() {
 
   const [restaurants, setRestaurants] = useState([]);
   const [restaurantsLoading, setRestaurantsLoading] = useState(true);
-  
+
+  const [settings, setSettings] = useState(null);
+
   useEffect(() => {
     async function fetchRestaurants() {
       try {
@@ -74,6 +76,29 @@ export default function Kosar() {
     }
 
     fetchRestaurants();
+  }, []);
+
+  useEffect(() => {
+    async function fetchGlobalSettings() {
+      try {
+        const res = await fetch("/api/GlobalSettings", {
+          method: "GET"
+        });
+
+        if (!res.ok) {
+          throw new Error("Nem sikerült lekérni a GlobalSettings adatokat.");
+        }
+
+        const text = await res.text();
+        const data = JSON.parse(text);
+
+        setSettings(data);
+      } catch (error) {
+        console.error("Hiba a GlobalSettings lekérésekor:", error);
+      }
+    }
+
+    fetchGlobalSettings();
   }, []);
 
   async function submitOrder() {
@@ -404,31 +429,24 @@ export default function Kosar() {
               </h2>
 
               <div style={{ display: "grid", gap: "12px" }}>
-
                 <select
-  value={restaurantId}
-  onChange={(e) => setRestaurantId(e.target.value)}
-  style={inputStyle}
-  disabled={restaurantsLoading}
->
-  <option value="">
-    {restaurantsLoading ? "Éttermek betöltése..." : "Válassz éttermet"}
-  </option>
-  {restaurants.map((r) => (
-    <option key={r.id} value={r.id}>
-      {r.name} - {r.address}
-    </option>
-  ))}
-</select>
-                <input
-                  placeholder="Étterem ID"
                   value={restaurantId}
                   onChange={(e) => setRestaurantId(e.target.value)}
                   style={inputStyle}
-                />
-                
+                  disabled={restaurantsLoading}
+                >
+                  <option value="">
+                    {restaurantsLoading ? "Éttermek betöltése..." : "Válassz éttermet"}
+                  </option>
+                  {restaurants.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name} - {r.address}
+                    </option>
+                  ))}
+                </select>
+
                 <input
-                  placeholder="Név (opcionális)"
+                  placeholder="Név"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   style={inputStyle}
@@ -495,6 +513,10 @@ export default function Kosar() {
                 boxShadow: "0 12px 30px rgba(0,0,0,0.15)"
               }}
             >
+              <div style={{ marginBottom: 12 }}>
+                Szállítási idő: {settings?.deliveryTime ?? "..."} perc
+              </div>
+
               <h2 style={{ marginTop: 0, marginBottom: 18, fontSize: "1.35rem" }}>
                 Összesítés
               </h2>

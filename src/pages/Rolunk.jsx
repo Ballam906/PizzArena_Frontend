@@ -67,7 +67,7 @@ export default function Rolunk() {
               <p>Betöltés...</p>
             ) : (
               ettermeink.map((p) => (
-                <article className="place-card" key={p.id}> {/* p.name helyett p.id a biztosabb key */}
+                <article className="place-card" key={p.id}> 
                   <div className="place-imgWrap">
                     <img 
                       className="place-img" 
@@ -84,6 +84,7 @@ export default function Rolunk() {
                     </p>
                     <p className="place-desc">{p.description}</p>
                     <p className="place-open">Nyitva: {p.openingHours}</p>
+                    <p className="place-open">Elérhetőség: {p.contactPhone}</p>
 
                     <div className="place-actions">
                       <button
