@@ -5,7 +5,7 @@
   kosárba helyezhetik a termékeket, majd egyszerűen leadhatják rendelésüket.
 </p>
 
-<h2 id="projekt-attekintes">📌 Projekt áttekintés</h2>
+<h2 id="projekt-attekintes">Projekt áttekintés</h2>
 
 <p>
   A <strong>PizzAréna</strong> egy több éttermet kezelő online ételrendelő webalkalmazás.
@@ -24,21 +24,21 @@
   <li>Modern, reszponzív felhasználói felület</li>
 </ul>
 
-<h2 id="kiemelt-funkciok">🔥 Kiemelt funkciók</h2>
+<h2 id="kiemelt-funkciok">Kiemelt funkciók</h2>
 
 <ul>
-  <li>👤 <strong>Felhasználói fiók rendszer</strong> – regisztráció és bejelentkezés</li>
-  <li>🍽️ <strong>Ételek böngészése</strong> – több étterem kínálatából</li>
-  <li>🛒 <strong>Kosár kezelés</strong> – termék hozzáadás, törlés, mennyiség módosítás</li>
-  <li>📦 <strong>Rendelés leadása</strong> – egyszerű véglegesítési folyamat</li>
-  <li>📍 <strong>Rendelés státusz követés</strong> – a rendelés aktuális állapotának megjelenítése</li>
-  <li>📱 <strong>Mobiloptimalizált megjelenés</strong> – reszponzív kialakítás különböző eszközökre</li>
+  <li><strong>Felhasználói fiók rendszer</strong> – regisztráció és bejelentkezés</li>
+  <li><strong>Ételek böngészése</strong> – több étterem kínálatából</li>
+  <li><strong>Kosár kezelés</strong> – termék hozzáadás, törlés, mennyiség módosítás</li>
+  <li><strong>Rendelés leadása</strong> – egyszerű véglegesítési folyamat</li>
+  <li><strong>Rendelés státusz követés</strong> – a rendelés aktuális állapotának megjelenítése</li>
+  <li><strong>Mobiloptimalizált megjelenés</strong> – reszponzív kialakítás különböző eszközökre</li>
 </ul>
 
 
 <h1 align="center">Oldalak</h1>
 
-<h3>🏠 Kezdőlap</h3>
+<h3>Kezdőlap</h3>
 <p>
   A kezdőlap a weboldal fő belépési pontja, ahol a látogatók gyors áttekintést kapnak
   a szolgáltatásról, az elérhető éttermekről és a rendelési lehetőségekről.
@@ -50,7 +50,7 @@
 
 
 
-<h3>ℹ️ Rólunk</h3>
+<h3>Rólunk</h3>
 <p>
   A Rólunk oldal bemutatja a PizzAréna rendszer célját, működését és a platform fő előnyeit.
 </p>
@@ -61,7 +61,7 @@
 
 ---
 
-<h3>🍔 Étlap</h3>
+<h3>Étlap</h3>
 <p>
   Az Étlap oldalon a felhasználók böngészhetnek az elérhető ételek között,
   éttermek és kategóriák szerint.
@@ -86,7 +86,7 @@
 
 ---
 
-<h3>👤 Fiók oldal</h3>
+<h3>Fiók oldal</h3>
 <p>
   A fiók oldalon a felhasználók bejelentkezhetnek, illetve hozzáférhetnek saját profiljukhoz
   és rendeléseikhez.
@@ -96,12 +96,12 @@
   <img src="images/account.png" width="800" alt="Fiók oldal"/>
 </p>
 
-<h2 id="ettermek">🏪 Éttermek</h2>
+<h2 id="ettermek">Éttermek</h2>
 
 <p>A rendszer jelenleg 3 különböző éttermet kezel:</p>
 
 
-<h2 id="rendszer-felepitese">🧱 Rendszer felépítése</h2>
+<h2 id="rendszer-felepitese">Rendszer felépítése</h2>
 
 <p>A projekt több komponensből áll:</p>
 
@@ -113,7 +113,7 @@
 
 ---
 
-<h2>⚙️ Főbb működési elemek</h2>
+<h2>Főbb működési elemek</h2>
 
 <ul>
   <li>Ételek listázása kategóriák szerint</li>
@@ -127,7 +127,7 @@
 
 ---
 
-<h2 id="technologiak">🛠️ Használt technológiák</h2>
+<h2 id="technologiak">Használt technológiák</h2>
 
 <ul>
   <li>React</li>
@@ -139,7 +139,7 @@
 ---
 
 
-<h2>📄 Licenc</h2>
+<h2>Licenc</h2>
 
 <p>
   Ez a projekt oktatási célból készült.
