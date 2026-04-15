@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../assets/css/Footer.css";
-import pizzarenaLogo from "../assets/images/pizzarena_logo.png";
+import pizzarenaLogo from "../assets/images/uj_pizzarena_logo.png";
 
 function Footer() {
   const [settings, setSettings] = useState(null);
@@ -16,7 +16,6 @@ async function fetchGlobalSettings() {
       method: "GET"
     });
 
-    console.log("status:", res.status);
 
     if (!res.ok) {
       throw new Error("Nem sikerült lekérni a GlobalSettings adatokat.");

@@ -154,14 +154,6 @@ async function handleLogin(e) {
           >
             Regisztráció
           </button>
-
-          <button
-            className="btn btn-outline"
-            onClick={() => navigate("/etlap")}
-            type="button"
-          >
-            Vendégként rendelek
-          </button>
         </div>
 
         {notice && (

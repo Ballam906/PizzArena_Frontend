@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import "../assets/css/Header.css";
-import pizzarenaLogo from "../assets/images/pizzarena_logo.png";
+import pizzarenaLogo from "../assets/images/uj_pizzarena_logo.png";
 
 function Header() {
   return (
