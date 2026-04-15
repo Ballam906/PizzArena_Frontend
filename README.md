@@ -73,7 +73,7 @@
 
 ---
 
-<h3>🛒 Kosár</h3>
+<h3>Kosár</h3>
 <p>
   A Kosár oldalon a kiválasztott termékek jelennek meg, ahol lehetőség van a mennyiség
   módosítására, illetve a tételek eltávolítására is. A felhasználó véglegesítheti a kiválasztott termékeket
