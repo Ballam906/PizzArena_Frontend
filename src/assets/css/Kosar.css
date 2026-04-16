@@ -1,0 +1,327 @@
+.kosar-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8f8f8 0%, #efefef 100%);
+  padding: 32px 16px;
+}
+
+.kosar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.kosar-header {
+  margin-bottom: 24px;
+}
+
+.kosar-title {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #1f1f1f;
+}
+
+.kosar-subtitle {
+  margin-top: 8px;
+  color: #666;
+  font-size: 1rem;
+}
+
+.kosar-alert {
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.kosar-alert-error {
+  border: 1px solid #f1a8a8;
+  background: #fff1f1;
+  color: #9f1d1d;
+}
+
+.kosar-alert-success {
+  border: 1px solid #9dd8aa;
+  background: #f1fff4;
+  color: #1f6b32;
+}
+
+.kosar-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 24px;
+}
+
+.kosar-card {
+  border: 1px solid #e8e8e8;
+  border-radius: 20px;
+  padding: 22px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.kosar-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.kosar-section-title {
+  margin: 0;
+  font-size: 1.35rem;
+  color: #222;
+}
+
+.kosar-section-title-margin {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+.kosar-empty-cart {
+  border: 1px dashed #d9d9d9;
+  border-radius: 16px;
+  padding: 28px;
+  text-align: center;
+  color: #666;
+  background: #fcfcfc;
+}
+
+.kosar-products-list {
+  display: grid;
+  gap: 14px;
+}
+
+.kosar-product-card {
+  display: grid;
+  grid-template-columns: 88px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid #efefef;
+  border-radius: 18px;
+  padding: 14px;
+  background: #fcfcfc;
+}
+
+.kosar-product-image {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 14px;
+  background: #f3f3f3;
+  border: 1px solid #eee;
+}
+
+.kosar-product-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.kosar-product-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #1f1f1f;
+  margin-bottom: 4px;
+}
+
+.kosar-product-price {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.kosar-product-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kosar-qty-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.2s;
+}
+
+.kosar-qty-btn:hover {
+  background: #f5f5f5;
+}
+
+.kosar-qty-value {
+  min-width: 34px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.kosar-product-total {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #111;
+  white-space: nowrap;
+}
+
+.kosar-right-column {
+  display: grid;
+  gap: 20px;
+  align-self: start;
+}
+
+.kosar-form-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.kosar-form-row {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  gap: 12px;
+}
+
+.kosar-form-input {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 12px;
+  border: 1px solid #dcdcdc;
+  background: #fcfcfc;
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: 0.2s;
+}
+
+.kosar-form-input:focus {
+  border-color: #999;
+  background: #fff;
+}
+
+.kosar-form-textarea {
+  resize: vertical;
+}
+
+.kosar-summary-card {
+  border-radius: 20px;
+  padding: 22px;
+  background: linear-gradient(135deg, #1f1f1f 0%, #363636 100%);
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.kosar-delivery-time {
+  margin-bottom: 12px;
+}
+
+.kosar-summary-title {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 1.35rem;
+}
+
+.kosar-summary-list {
+  display: grid;
+  gap: 10px;
+}
+
+.kosar-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kosar-summary-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.18);
+  margin: 6px 0;
+}
+
+.kosar-summary-row-total {
+  font-size: 1.1rem;
+}
+
+.kosar-summary-actions {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.kosar-btn {
+  transition: 0.2s;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.kosar-btn:hover {
+  opacity: 0.92;
+}
+
+.kosar-btn-light {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.kosar-btn-delete {
+  margin-left: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: none;
+  background: #ffe5e5;
+  color: #b42323;
+}
+
+.kosar-btn-back {
+  padding: 13px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: #fff;
+}
+
+.kosar-btn-order {
+  padding: 13px 14px;
+  border-radius: 12px;
+  border: none;
+  background: #ffffff;
+  color: #111;
+  font-weight: 800;
+}
+
+.kosar-btn-order-disabled {
+  background: #bdbdbd;
+  color: #666;
+  cursor: not-allowed;
+}
+
+@media (max-width: 992px) {
+  .kosar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .kosar-product-card {
+    grid-template-columns: 1fr;
+  }
+
+  .kosar-product-image {
+    width: 100%;
+    max-width: 220px;
+    height: 220px;
+  }
+
+  .kosar-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .kosar-summary-actions {
+    grid-template-columns: 1fr;
+  }
+}

@@ -10,26 +10,24 @@ function Footer() {
     fetchGlobalSettings();
   }, []);
 
-async function fetchGlobalSettings() {
-  try {
-    const res = await fetch("/api/GlobalSettings", {
-      method: "GET"
-    });
+  async function fetchGlobalSettings() {
+    try {
+      const res = await fetch("/api/GlobalSettings", {
+        method: "GET"
+      });
 
+      if (!res.ok) {
+        throw new Error("Nem sikerült lekérni a GlobalSettings adatokat.");
+      }
 
-    if (!res.ok) {
-      throw new Error("Nem sikerült lekérni a GlobalSettings adatokat.");
+      const text = await res.text();
+      const data = JSON.parse(text);
+      setSettings(data);
+    } catch (error) {
+      console.error("Hiba a GlobalSettings lekérésekor:", error);
     }
-
-    const text = await res.text();
-
-    const data = JSON.parse(text);
-
-    setSettings(data);
-  } catch (error) {
-    console.error("Hiba a GlobalSettings lekérésekor:", error);
   }
-}
+
   function formatUrl(url) {
     if (!url) return "#";
     if (!url.startsWith("http")) {
@@ -68,8 +66,8 @@ async function fetchGlobalSettings() {
         <div className="footer-section">
           <h3>Kapcsolat</h3>
           <ul>
-            <li>📍 Magyarország</li>
-            <li>✉️ {settings?.contactEmail || "Betöltés..."}</li>
+            <li>Magyarország</li>
+            <li>{settings?.contactEmail || "Betöltés..."}</li>
           </ul>
         </div>
 
@@ -77,12 +75,20 @@ async function fetchGlobalSettings() {
           <h3>Kövess minket</h3>
           <ul>
             <li>
-              <a href={settings?.facebookUrl || "#"} target="_blank" rel="noreferrer">
+              <a
+                href={formatUrl(settings?.facebookUrl)}
+                target="_blank"
+                rel="noreferrer"
+              >
                 Facebook
               </a>
             </li>
             <li>
-              <a href={settings?.instagramUrl || "#"} target="_blank" rel="noreferrer">
+              <a
+                href={formatUrl(settings?.instagramUrl)}
+                target="_blank"
+                rel="noreferrer"
+              >
                 Instagram
               </a>
             </li>

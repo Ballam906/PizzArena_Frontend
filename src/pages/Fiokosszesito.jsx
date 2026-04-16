@@ -277,54 +277,59 @@ show("success", data?.message || "A jelszó sikeresen módosítva lett.");
           <strong>Email:</strong> {userData.CustomerEmail || userData.email || "-"}
         </p>
 
-        <div className="fiok-password-area">
+     <div className="fiok-password-area">
+      <button
+        type="button"
+        className={`fiok-password-btn ${showPasswordForm ? "active" : ""}`}
+        onClick={() => setShowPasswordForm(!showPasswordForm)}
+      >
+        <span>
+          {showPasswordForm ? "Jelszócsere bezárása" : "Jelszó csere"}
+        </span>
+        <span className={`fiok-password-btn-icon ${showPasswordForm ? "active" : ""}`}>
+          +
+        </span>
+      </button>
+
+      <div className={`fiok-password-form-wrap ${showPasswordForm ? "open" : ""}`}>
+        <form className="fiok-password-form" onSubmit={handlePasswordChange}>
+          <input
+            type="password"
+            name="currentPassword"
+            placeholder="Jelenlegi jelszó"
+            value={passwordData.currentPassword}
+            onChange={handlePasswordInputChange}
+            className="fiok-input"
+          />
+
+          <input
+            type="password"
+            name="newPassword"
+            placeholder="Új jelszó"
+            value={passwordData.newPassword}
+            onChange={handlePasswordInputChange}
+            className="fiok-input"
+          />
+
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Új jelszó megerősítése"
+            value={passwordData.confirmPassword}
+            onChange={handlePasswordInputChange}
+            className="fiok-input"
+          />
+
           <button
-            type="button"
-            className="fiok-password-btn"
-            onClick={() => setShowPasswordForm(!showPasswordForm)}
+            type="submit"
+            className="fiok-save-password-btn"
+            disabled={passwordLoading}
           >
-            {showPasswordForm ? "Jelszócsere bezárása" : "Jelszó csere"}
+            {passwordLoading ? "Mentés..." : "Jelszó mentése"}
           </button>
-
-          {showPasswordForm && (
-            <form className="fiok-password-form" onSubmit={handlePasswordChange}>
-              <input
-                type="password"
-                name="currentPassword"
-                placeholder="Jelenlegi jelszó"
-                value={passwordData.currentPassword}
-                onChange={handlePasswordInputChange}
-                className="fiok-input"
-              />
-
-              <input
-                type="password"
-                name="newPassword"
-                placeholder="Új jelszó"
-                value={passwordData.newPassword}
-                onChange={handlePasswordInputChange}
-                className="fiok-input"
-              />
-
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Új jelszó megerősítése"
-                value={passwordData.confirmPassword}
-                onChange={handlePasswordInputChange}
-                className="fiok-input"
-              />
-
-              <button
-                type="submit"
-                className="fiok-save-password-btn"
-                disabled={passwordLoading}
-              >
-                {passwordLoading ? "Mentés..." : "Jelszó mentése"}
-              </button>
-            </form>
-          )}
-        </div>
+        </form>
+      </div>
+    </div>
       </section>
 
       <section className="fiok-section">

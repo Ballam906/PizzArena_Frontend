@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
 import { postOrder } from "../api/client.js";
+import "../assets/css/Kosar.css";
 
 function parseJwt(token) {
   try {
@@ -164,242 +165,82 @@ export default function Kosar() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(180deg, #f8f8f8 0%, #efefef 100%)",
-        padding: "32px 16px"
-      }}
-    >
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ marginBottom: 24 }}>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: "2.2rem",
-              fontWeight: 800,
-              color: "#1f1f1f"
-            }}
-          >
-            Kosár
-          </h1>
-          <p style={{ marginTop: 8, color: "#666", fontSize: "1rem" }}>
+    <div className="kosar-page">
+      <div className="kosar-container">
+        <div className="kosar-header">
+          <h1 className="kosar-title">Kosár</h1>
+          <p className="kosar-subtitle">
             Nézd át a termékeket, add meg a szállítási adatokat, és véglegesítsd a rendelésed.
           </p>
         </div>
 
         {apiError && (
-          <div
-            style={{
-              border: "1px solid #f1a8a8",
-              background: "#fff1f1",
-              color: "#9f1d1d",
-              padding: "14px 16px",
-              borderRadius: 14,
-              marginBottom: 20,
-              boxShadow: "0 4px 12px rgba(0,0,0,0.04)"
-            }}
-          >
+          <div className="kosar-alert kosar-alert-error">
             {apiError}
           </div>
         )}
 
         {apiOk && (
-          <div
-            style={{
-              border: "1px solid #9dd8aa",
-              background: "#f1fff4",
-              color: "#1f6b32",
-              padding: "14px 16px",
-              borderRadius: 14,
-              marginBottom: 20,
-              boxShadow: "0 4px 12px rgba(0,0,0,0.04)"
-            }}
-          >
+          <div className="kosar-alert kosar-alert-success">
             {apiOk}
           </div>
         )}
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.5fr 1fr",
-            gap: 24
-          }}
-        >
-          <div
-            style={{
-              border: "1px solid #e8e8e8",
-              borderRadius: 20,
-              padding: "22px",
-              background: "#ffffff",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.05)"
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 18,
-                flexWrap: "wrap",
-                gap: 12
-              }}
-            >
-              <h2 style={{ margin: 0, fontSize: "1.35rem", color: "#222" }}>
-                Termékek
-              </h2>
+        <div className="kosar-grid">
+          <div className="kosar-card">
+            <div className="kosar-card-header">
+              <h2 className="kosar-section-title">Termékek</h2>
 
               {!!items.length && (
-                <button
-                  onClick={clear}
-                  style={{
-                    padding: "10px 14px",
-                    borderRadius: 12,
-                    border: "1px solid #ddd",
-                    background: "#fafafa",
-                    cursor: "pointer",
-                    fontWeight: 600
-                  }}
-                >
+                <button onClick={clear} className="kosar-btn kosar-btn-light">
                   Kosár ürítése
                 </button>
               )}
             </div>
 
             {!items.length ? (
-              <div
-                style={{
-                  border: "1px dashed #d9d9d9",
-                  borderRadius: 16,
-                  padding: "28px",
-                  textAlign: "center",
-                  color: "#666",
-                  background: "#fcfcfc"
-                }}
-              >
-                A kosár üres.
-              </div>
+              <div className="kosar-empty-cart">A kosár üres.</div>
             ) : (
-              <div style={{ display: "grid", gap: "14px" }}>
+              <div className="kosar-products-list">
                 {items.map((x) => (
-                  <div
-                    key={x.id}
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "88px 1fr auto",
-                      gap: "16px",
-                      alignItems: "center",
-                      border: "1px solid #efefef",
-                      borderRadius: 18,
-                      padding: "14px",
-                      background: "#fcfcfc"
-                    }}
-                  >
+                  <div key={x.id} className="kosar-product-card">
                     <img
                       src={x.image}
                       alt={x.name}
-                      style={{
-                        width: 88,
-                        height: 88,
-                        objectFit: "cover",
-                        borderRadius: 14,
-                        background: "#f3f3f3",
-                        border: "1px solid #eee"
-                      }}
+                      className="kosar-product-image"
                     />
 
-                    <div>
-                      <div
-                        style={{
-                          fontWeight: 700,
-                          fontSize: "1.05rem",
-                          color: "#1f1f1f",
-                          marginBottom: 4
-                        }}
-                      >
-                        {x.name}
-                      </div>
+                    <div className="kosar-product-info">
+                      <div className="kosar-product-name">{x.name}</div>
+                      <div className="kosar-product-price">{x.price} Ft / db</div>
 
-                      <div style={{ color: "#666", fontSize: 14, marginBottom: 12 }}>
-                        {x.price} Ft / db
-                      </div>
-
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                          flexWrap: "wrap"
-                        }}
-                      >
+                      <div className="kosar-product-actions">
                         <button
                           onClick={() => dec(x.id)}
-                          style={{
-                            width: 34,
-                            height: 34,
-                            borderRadius: 10,
-                            border: "1px solid #ddd",
-                            background: "#fff",
-                            cursor: "pointer",
-                            fontWeight: 700
-                          }}
+                          className="kosar-qty-btn"
                         >
                           -
                         </button>
 
-                        <span
-                          style={{
-                            minWidth: 34,
-                            textAlign: "center",
-                            fontWeight: 700,
-                            fontSize: "1rem"
-                          }}
-                        >
-                          {x.qty}
-                        </span>
+                        <span className="kosar-qty-value">{x.qty}</span>
 
                         <button
                           onClick={() => inc(x.id)}
-                          style={{
-                            width: 34,
-                            height: 34,
-                            borderRadius: 10,
-                            border: "1px solid #ddd",
-                            background: "#fff",
-                            cursor: "pointer",
-                            fontWeight: 700
-                          }}
+                          className="kosar-qty-btn"
                         >
                           +
                         </button>
 
                         <button
                           onClick={() => remove(x.id)}
-                          style={{
-                            marginLeft: 8,
-                            padding: "8px 12px",
-                            borderRadius: 10,
-                            border: "none",
-                            background: "#ffe5e5",
-                            color: "#b42323",
-                            cursor: "pointer",
-                            fontWeight: 600
-                          }}
+                          className="kosar-btn kosar-btn-delete"
                         >
                           Törlés
                         </button>
                       </div>
                     </div>
 
-                    <div
-                      style={{
-                        fontWeight: 800,
-                        fontSize: "1.05rem",
-                        color: "#111",
-                        whiteSpace: "nowrap"
-                      }}
-                    >
+                    <div className="kosar-product-total">
                       {(Number(x.price) || 0) * (Number(x.qty) || 0)} Ft
                     </div>
                   </div>
@@ -408,31 +249,17 @@ export default function Kosar() {
             )}
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gap: 20,
-              alignSelf: "start"
-            }}
-          >
-            <div
-              style={{
-                border: "1px solid #e8e8e8",
-                borderRadius: 20,
-                padding: "22px",
-                background: "#ffffff",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.05)"
-              }}
-            >
-              <h2 style={{ marginTop: 0, marginBottom: 18, fontSize: "1.35rem", color: "#222" }}>
+          <div className="kosar-right-column">
+            <div className="kosar-card">
+              <h2 className="kosar-section-title kosar-section-title-margin">
                 Szállítási adatok
               </h2>
 
-              <div style={{ display: "grid", gap: "12px" }}>
+              <div className="kosar-form-grid">
                 <select
                   value={restaurantId}
                   onChange={(e) => setRestaurantId(e.target.value)}
-                  style={inputStyle}
+                  className="kosar-form-input"
                   disabled={restaurantsLoading}
                 >
                   <option value="">
@@ -449,41 +276,35 @@ export default function Kosar() {
                   placeholder="Név"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  style={inputStyle}
+                  className="kosar-form-input"
                 />
 
                 <input
                   placeholder="Telefonszám"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
-                  style={inputStyle}
+                  className="kosar-form-input"
                 />
 
                 <input
                   placeholder="Email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
-                  style={inputStyle}
+                  className="kosar-form-input"
                 />
 
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 140px",
-                    gap: "12px"
-                  }}
-                >
+                <div className="kosar-form-row">
                   <input
                     placeholder="Város"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    style={inputStyle}
+                    className="kosar-form-input"
                   />
                   <input
                     placeholder="Irányítószám"
                     value={postalCode}
                     onChange={(e) => setPostalCode(e.target.value)}
-                    style={inputStyle}
+                    className="kosar-form-input"
                   />
                 </div>
 
@@ -491,7 +312,7 @@ export default function Kosar() {
                   placeholder="Utca, házszám"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
-                  style={inputStyle}
+                  className="kosar-form-input"
                 />
 
                 <textarea
@@ -499,77 +320,41 @@ export default function Kosar() {
                   value={other}
                   onChange={(e) => setOther(e.target.value)}
                   rows={4}
-                  style={{ ...inputStyle, resize: "vertical" }}
+                  className="kosar-form-input kosar-form-textarea"
                 />
               </div>
             </div>
 
-            <div
-              style={{
-                borderRadius: 20,
-                padding: "22px",
-                background: "linear-gradient(135deg, #1f1f1f 0%, #363636 100%)",
-                color: "#fff",
-                boxShadow: "0 12px 30px rgba(0,0,0,0.15)"
-              }}
-            >
-              <div style={{ marginBottom: 12 }}>
+            <div className="kosar-summary-card">
+              <div className="kosar-delivery-time">
                 Szállítási idő: {settings?.deliveryTime ?? "..."} perc
               </div>
 
-              <h2 style={{ marginTop: 0, marginBottom: 18, fontSize: "1.35rem" }}>
-                Összesítés
-              </h2>
+              <h2 className="kosar-summary-title">Összesítés</h2>
 
-              <div style={{ display: "grid", gap: 10 }}>
-                <div style={summaryRowStyle}>
+              <div className="kosar-summary-list">
+                <div className="kosar-summary-row">
                   <span>Részösszeg</span>
                   <b>{total} Ft</b>
                 </div>
 
-                <div style={summaryRowStyle}>
+                <div className="kosar-summary-row">
                   <span>Szállítás</span>
                   <b>{shipping} Ft</b>
                 </div>
 
-                <div
-                  style={{
-                    height: 1,
-                    background: "rgba(255,255,255,0.18)",
-                    margin: "6px 0"
-                  }}
-                />
+                <div className="kosar-summary-divider" />
 
-                <div
-                  style={{
-                    ...summaryRowStyle,
-                    fontSize: "1.1rem"
-                  }}
-                >
+                <div className="kosar-summary-row kosar-summary-row-total">
                   <span>Végösszeg</span>
                   <b>{grandTotal} Ft</b>
                 </div>
               </div>
 
-              <div
-                style={{
-                  marginTop: "20px",
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 10
-                }}
-              >
+              <div className="kosar-summary-actions">
                 <button
                   onClick={() => nav(-1)}
-                  style={{
-                    padding: "13px 14px",
-                    borderRadius: 12,
-                    border: "1px solid rgba(255,255,255,0.25)",
-                    background: "transparent",
-                    color: "#fff",
-                    cursor: "pointer",
-                    fontWeight: 700
-                  }}
+                  className="kosar-btn kosar-btn-back"
                 >
                   Vissza
                 </button>
@@ -577,15 +362,9 @@ export default function Kosar() {
                 <button
                   onClick={submitOrder}
                   disabled={submitting || !items.length}
-                  style={{
-                    padding: "13px 14px",
-                    borderRadius: 12,
-                    border: "none",
-                    background: submitting || !items.length ? "#bdbdbd" : "#ffffff",
-                    color: submitting || !items.length ? "#666" : "#111",
-                    cursor: submitting || !items.length ? "not-allowed" : "pointer",
-                    fontWeight: 800
-                  }}
+                  className={`kosar-btn kosar-btn-order ${
+                    submitting || !items.length ? "kosar-btn-order-disabled" : ""
+                  }`}
                 >
                   {submitting ? "Küldés..." : "Rendelés leadása"}
                 </button>
@@ -597,20 +376,3 @@ export default function Kosar() {
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "13px 14px",
-  borderRadius: 12,
-  border: "1px solid #dcdcdc",
-  background: "#fcfcfc",
-  fontSize: "0.95rem",
-  outline: "none",
-  boxSizing: "border-box"
-};
-
-const summaryRowStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center"
-};
