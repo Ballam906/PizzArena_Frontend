@@ -1,4 +1,4 @@
-**Itt található a frontend forráskódja, a hozzá tartozó tesztek, valamint a Python Selenium webdriver tesztek is!**
+**Itt található a frontend forráskódja, a hozzá tartozó tesztek, valamint a Python Selenium webdriver teszt is!**
 
 # PizzAréna Weboldal
 
