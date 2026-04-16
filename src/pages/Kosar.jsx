@@ -6,14 +6,21 @@ import "../assets/css/Kosar.css";
 
 function parseJwt(token) {
   try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const tokenParts = token.split(".");
+    const payload = tokenParts[1];
+
+    if (!payload) {
+      return null;
+    }
+
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
     const json = decodeURIComponent(
       atob(base64)
         .split("")
-        .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+        .map((char) => "%" + char.charCodeAt(0).toString(16).padStart(2, "0"))
         .join("")
     );
+
     return JSON.parse(json);
   } catch {
     return null;
@@ -22,19 +29,34 @@ function parseJwt(token) {
 
 function getUserIdFromToken() {
   const token = localStorage.getItem("token");
-  const c = token ? parseJwt(token) : null;
+  const claims = token ? parseJwt(token) : null;
+
+  if (!claims) {
+    return null;
+  }
 
   return (
-    c?.sub ??
-    c?.userid ??
-    c?.userId ??
-    c?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] ??
+    claims.sub ||
+    claims.userid ||
+    claims.userId ||
     null
   );
 }
 
+function readJson(text, defaultValue) {
+  if (!text) {
+    return defaultValue;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return defaultValue;
+  }
+}
+
 export default function Kosar() {
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const { items, inc, dec, remove, clear, total } = useCart();
 
   const [customerName, setCustomerName] = useState("");
@@ -50,13 +72,17 @@ export default function Kosar() {
   const [apiError, setApiError] = useState(null);
   const [apiOk, setApiOk] = useState(null);
 
-  const shipping = useMemo(() => (items.length ? 490 : 0), [items.length]);
-  const grandTotal = useMemo(() => total + shipping, [total, shipping]);
-
   const [restaurants, setRestaurants] = useState([]);
   const [restaurantsLoading, setRestaurantsLoading] = useState(true);
-
   const [settings, setSettings] = useState(null);
+
+  const shipping = useMemo(() => {
+    return items.length > 0 ? 490 : 0;
+  }, [items.length]);
+
+  const grandTotal = useMemo(() => {
+    return total + shipping;
+  }, [total, shipping]);
 
   useEffect(() => {
     async function fetchRestaurants() {
@@ -64,13 +90,25 @@ export default function Kosar() {
         const res = await fetch("/api/Restaurant");
 
         if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
+          setRestaurants([]);
+          return;
         }
 
         const data = await res.json();
-        setRestaurants(data);
-      } catch (err) {
-        console.error("Hiba az éttermek betöltésekor:", err);
+
+        if (Array.isArray(data)) {
+          setRestaurants(data);
+          return;
+        }
+
+        if (Array.isArray(data.result)) {
+          setRestaurants(data.result);
+          return;
+        }
+
+        setRestaurants([]);
+      } catch {
+        setRestaurants([]);
       } finally {
         setRestaurantsLoading(false);
       }
@@ -87,15 +125,15 @@ export default function Kosar() {
         });
 
         if (!res.ok) {
-          throw new Error("Nem sikerült lekérni a GlobalSettings adatokat.");
+          setSettings(null);
+          return;
         }
 
         const text = await res.text();
-        const data = JSON.parse(text);
-
+        const data = readJson(text, null);
         setSettings(data);
-      } catch (error) {
-        console.error("Hiba a GlobalSettings lekérésekor:", error);
+      } catch {
+        setSettings(null);
       }
     }
 
@@ -129,7 +167,7 @@ export default function Kosar() {
     }
 
     if (!city.trim() || !postalCode.trim() || !street.trim() || !other.trim()) {
-      setApiError("Cím mezők kötelezőek (város, irsz, utca, egyéb).");
+      setApiError("Cím mezők kötelezőek.");
       return;
     }
 
@@ -143,22 +181,20 @@ export default function Kosar() {
       other: other.trim(),
       userId: userId,
       restaurantId: Number(restaurantId),
-      items: items.map((x) => ({
-        productId: x.id,
-        piece: x.qty,
-        itemPrice: Number(x.price) || 0
+      items: items.map((item) => ({
+        productId: item.id,
+        piece: item.qty,
+        itemPrice: Number(item.price) || 0
       }))
     };
-
-    console.log("KÜLDÖTT RENDELÉS:", payload);
 
     try {
       setSubmitting(true);
       await postOrder(payload);
       setApiOk("Rendelés leadva.");
       clear();
-    } catch (e) {
-      setApiError(e?.message ?? String(e));
+    } catch (error) {
+      setApiError(error?.message || "Sikertelen rendelés.");
     } finally {
       setSubmitting(false);
     }
@@ -191,7 +227,7 @@ export default function Kosar() {
             <div className="kosar-card-header">
               <h2 className="kosar-section-title">Termékek</h2>
 
-              {!!items.length && (
+              {items.length > 0 && (
                 <button onClick={clear} className="kosar-btn kosar-btn-light">
                   Kosár ürítése
                 </button>
@@ -202,37 +238,37 @@ export default function Kosar() {
               <div className="kosar-empty-cart">A kosár üres.</div>
             ) : (
               <div className="kosar-products-list">
-                {items.map((x) => (
-                  <div key={x.id} className="kosar-product-card">
+                {items.map((item) => (
+                  <div key={item.id} className="kosar-product-card">
                     <img
-                      src={x.image}
-                      alt={x.name}
+                      src={item.image}
+                      alt={item.name}
                       className="kosar-product-image"
                     />
 
                     <div className="kosar-product-info">
-                      <div className="kosar-product-name">{x.name}</div>
-                      <div className="kosar-product-price">{x.price} Ft / db</div>
+                      <div className="kosar-product-name">{item.name}</div>
+                      <div className="kosar-product-price">{item.price} Ft / db</div>
 
                       <div className="kosar-product-actions">
                         <button
-                          onClick={() => dec(x.id)}
+                          onClick={() => dec(item.id)}
                           className="kosar-qty-btn"
                         >
                           -
                         </button>
 
-                        <span className="kosar-qty-value">{x.qty}</span>
+                        <span className="kosar-qty-value">{item.qty}</span>
 
                         <button
-                          onClick={() => inc(x.id)}
+                          onClick={() => inc(item.id)}
                           className="kosar-qty-btn"
                         >
                           +
                         </button>
 
                         <button
-                          onClick={() => remove(x.id)}
+                          onClick={() => remove(item.id)}
                           className="kosar-btn kosar-btn-delete"
                         >
                           Törlés
@@ -241,7 +277,7 @@ export default function Kosar() {
                     </div>
 
                     <div className="kosar-product-total">
-                      {(Number(x.price) || 0) * (Number(x.qty) || 0)} Ft
+                      {(Number(item.price) || 0) * (Number(item.qty) || 0)} Ft
                     </div>
                   </div>
                 ))}
@@ -265,9 +301,10 @@ export default function Kosar() {
                   <option value="">
                     {restaurantsLoading ? "Éttermek betöltése..." : "Válassz éttermet"}
                   </option>
-                  {restaurants.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name} - {r.address}
+
+                  {restaurants.map((restaurant) => (
+                    <option key={restaurant.id} value={restaurant.id}>
+                      {restaurant.name} - {restaurant.address}
                     </option>
                   ))}
                 </select>
@@ -300,6 +337,7 @@ export default function Kosar() {
                     onChange={(e) => setCity(e.target.value)}
                     className="kosar-form-input"
                   />
+
                   <input
                     placeholder="Irányítószám"
                     value={postalCode}
@@ -353,7 +391,7 @@ export default function Kosar() {
 
               <div className="kosar-summary-actions">
                 <button
-                  onClick={() => nav(-1)}
+                  onClick={() => navigate(-1)}
                   className="kosar-btn kosar-btn-back"
                 >
                   Vissza

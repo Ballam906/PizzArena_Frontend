@@ -1,29 +1,46 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/Fiok.css";
 
-const Fiokosszesito = () => {
+function Fiokosszesito() {
   const navigate = useNavigate();
+
   const [userData, setUserData] = useState(null);
   const [orders, setOrders] = useState([]);
   const [notice, setNotice] = useState(null);
-
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: ""
   });
-  const [passwordLoading, setPasswordLoading] = useState(false);
 
-  const token = localStorage.getItem("token");
-
-  function show(type, text) {
+  function showNotice(type, text) {
     setNotice({ type, text });
   }
 
   function clearNotice() {
     setNotice(null);
+  }
+
+  function getToken() {
+    return localStorage.getItem("token");
+  }
+
+  function getStoredUser() {
+    const storedUser = localStorage.getItem("userData");
+
+    if (!storedUser) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(storedUser);
+    } catch {
+      localStorage.removeItem("userData");
+      return null;
+    }
   }
 
   function getStatusText(status) {
@@ -44,44 +61,61 @@ const Fiokosszesito = () => {
   }
 
   function getOrderTotal(items) {
-    if (!items || items.length === 0) return 0;
+    if (!items || items.length === 0) {
+      return 0;
+    }
 
     let total = 0;
 
     for (let i = 0; i < items.length; i++) {
-      const itemPrice = items[i].ItemPrice || items[i].itemPrice || 0;
-      const piece = items[i].Piece || items[i].piece || 0;
+      const item = items[i];
+      const itemPrice = item.itemPrice || 0;
+      const piece = item.piece || 0;
       total += itemPrice * piece;
     }
 
     return total;
   }
 
+  function getUserName(data) {
+    return (
+      data?.CustomerName || ""
+    );
+  }
+
+  function getUserEmail(data) {
+    return data?.CustomerEmail || "-";
+  }
+
+  async function readJsonOrDefault(response, defaultValue) {
+    const text = await response.text();
+
+    if (!text) {
+      return defaultValue;
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return defaultValue;
+    }
+  }
+
   useEffect(() => {
-    const storedUser = localStorage.getItem("userData");
+    const currentUser = getStoredUser();
+    const token = getToken();
 
-    if (storedUser) {
-      try {
-        setUserData(JSON.parse(storedUser));
-      } catch {
-        localStorage.removeItem("userData");
-        navigate("/rendeles");
-        return;
-      }
-    } else {
+    if (!currentUser || !token) {
       navigate("/rendeles");
       return;
     }
 
-    if (!token) {
-      navigate("/rendeles");
-      return;
-    }
+    setUserData(currentUser);
 
     async function fetchOrders() {
-      try {
-        clearNotice();
+      clearNotice();
 
+      try {
         const res = await fetch("https://localhost:7218/api/Order/MyOrdersWithItems", {
           method: "GET",
           headers: {
@@ -89,42 +123,40 @@ const Fiokosszesito = () => {
           }
         });
 
-        const text = await res.text();
-
-        let data;
-        try {
-          data = text ? JSON.parse(text) : [];
-        } catch {
-          data = [];
-        }
+        const data = await readJsonOrDefault(res, []);
 
         if (res.status === 401 || res.status === 403) {
-          show("error", "Nincs jogosultság vagy lejárt token.");
+          showNotice("error", "Nincs jogosultság vagy lejárt token.");
           return;
         }
 
         if (!res.ok) {
-          show("error", "Hiba a szerverről: " + res.status + " " + res.statusText);
+          showNotice("error", "Hiba a szerverről: " + res.status + " " + res.statusText);
           return;
         }
 
         if (Array.isArray(data)) {
           setOrders(data);
-        } else if (Array.isArray(data.result)) {
-          setOrders(data.result);
-        } else {
-          setOrders([]);
+          return;
         }
-      } catch (err) {
-        show("error", "Hálózati hiba: " + err.message);
+
+        if (Array.isArray(data.result)) {
+          setOrders(data.result);
+          return;
+        }
+
+        setOrders([]);
+      } catch (error) {
+        showNotice("error", "Hálózati hiba: " + error.message);
       }
     }
 
     fetchOrders();
-  }, [navigate, token]);
+  }, [navigate]);
 
   function handlePasswordInputChange(e) {
     const { name, value } = e.target;
+
     setPasswordData((prev) => ({
       ...prev,
       [name]: value
@@ -140,40 +172,40 @@ const Fiokosszesito = () => {
       !passwordData.newPassword ||
       !passwordData.confirmPassword
     ) {
-      show("error", "Minden jelszó mezőt tölts ki.");
+      showNotice("error", "Minden jelszó mezőt tölts ki.");
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      show("error", "Az új jelszó legyen legalább 6 karakter, tartalmaznia kell speciális karaktert.");
+      showNotice("error", "Az új jelszó legyen legalább 6 karakter.");
       return;
     }
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      show("error", "Az új jelszavak nem egyeznek.");
+      showNotice("error", "Az új jelszavak nem egyeznek.");
       return;
     }
 
     if (passwordData.currentPassword === passwordData.newPassword) {
-      show("error", "Az új jelszó nem lehet ugyanaz, mint a régi.");
+      showNotice("error", "Az új jelszó nem lehet ugyanaz, mint a régi.");
       return;
     }
 
-    const possibleUserName =
-      userData?.userName ||
-      userData?.UserName ||
-      userData?.username ||
-      userData?.Username ||
-      userData?.CustomerName ||
-      "";
+    const token = getToken();
+    const userName = getUserName(userData);
 
-    if (!possibleUserName) {
-      show("error", "Nem található felhasználónév az adatok között.");
+    if (!token) {
+      showNotice("error", "Nincs jogosultság vagy lejárt token.");
+      return;
+    }
+
+    if (!userName) {
+      showNotice("error", "Nem található felhasználónév az adatok között.");
       return;
     }
 
     const requestBody = {
-      userName: possibleUserName,
+      userName: userName,
       password: passwordData.currentPassword,
       newPassword: passwordData.newPassword
     };
@@ -190,43 +222,30 @@ const Fiokosszesito = () => {
         body: JSON.stringify(requestBody)
       });
 
-      const text = await res.text();
-
-      let data = null;
-      try {
-        data = text ? JSON.parse(text) : null;
-      } catch {
-        data = null;
-      }
-
-      console.log("Change password request body:", requestBody);
-      console.log("Change password status:", res.status);
-      console.log("Change password raw response:", text);
-      console.log("Change password parsed response:", data);
+      const data = await readJsonOrDefault(res, null);
 
       if (res.status === 401 || res.status === 403) {
-  show("error", "Nincs jogosultság vagy lejárt token.");
-  return;
-}
+        showNotice("error", "Nincs jogosultság vagy lejárt token.");
+        return;
+      }
 
-if (!res.ok || data?.success === false) {
-  const errorMessage =
-    data?.message ||
-    data?.title ||
-    data?.errors?.userName?.[0] ||
-    data?.errors?.UserName?.[0] ||
-    data?.errors?.password?.[0] ||
-    data?.errors?.Password?.[0] ||
-    data?.errors?.newPassword?.[0] ||
-    data?.errors?.NewPassword?.[0] ||
-    text ||
-    "Sikertelen jelszócsere.";
+      if (!res.ok || data?.success === false) {
+        const errorMessage =
+          data?.message ||
+          data?.title ||
+          data?.errors?.userName?.[0] ||
+          data?.errors?.UserName?.[0] ||
+          data?.errors?.password?.[0] ||
+          data?.errors?.Password?.[0] ||
+          data?.errors?.newPassword?.[0] ||
+          data?.errors?.NewPassword?.[0] ||
+          "Sikertelen jelszócsere.";
 
-  show("error", errorMessage);
-  return;
-}
+        showNotice("error", errorMessage);
+        return;
+      }
 
-show("success", data?.message || "A jelszó sikeresen módosítva lett.");
+      showNotice("success", data?.message || "A jelszó sikeresen módosítva lett.");
 
       setPasswordData({
         currentPassword: "",
@@ -235,8 +254,8 @@ show("success", data?.message || "A jelszó sikeresen módosítva lett.");
       });
 
       setShowPasswordForm(false);
-    } catch (err) {
-      show("error", "Hálózati hiba: " + err.message);
+    } catch (error) {
+      showNotice("error", "Hálózati hiba: " + error.message);
     } finally {
       setPasswordLoading(false);
     }
@@ -246,7 +265,6 @@ show("success", data?.message || "A jelszó sikeresen módosítva lett.");
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("userData");
-    show("info", "Sikeresen kijelentkeztél.");
     navigate("/rendeles");
   }
 
@@ -270,66 +288,66 @@ show("success", data?.message || "A jelszó sikeresen módosítva lett.");
         </div>
 
         <p className="fiok-text">
-          <strong>Név:</strong> {userData.userName || userData.CustomerName || "-"}
+          <strong>Név:</strong> {getUserName(userData) || "-"}
         </p>
 
         <p className="fiok-text">
-          <strong>Email:</strong> {userData.CustomerEmail || userData.email || "-"}
+          <strong>Email:</strong> {getUserEmail(userData)}
         </p>
 
-     <div className="fiok-password-area">
-      <button
-        type="button"
-        className={`fiok-password-btn ${showPasswordForm ? "active" : ""}`}
-        onClick={() => setShowPasswordForm(!showPasswordForm)}
-      >
-        <span>
-          {showPasswordForm ? "Jelszócsere bezárása" : "Jelszó csere"}
-        </span>
-        <span className={`fiok-password-btn-icon ${showPasswordForm ? "active" : ""}`}>
-          +
-        </span>
-      </button>
-
-      <div className={`fiok-password-form-wrap ${showPasswordForm ? "open" : ""}`}>
-        <form className="fiok-password-form" onSubmit={handlePasswordChange}>
-          <input
-            type="password"
-            name="currentPassword"
-            placeholder="Jelenlegi jelszó"
-            value={passwordData.currentPassword}
-            onChange={handlePasswordInputChange}
-            className="fiok-input"
-          />
-
-          <input
-            type="password"
-            name="newPassword"
-            placeholder="Új jelszó"
-            value={passwordData.newPassword}
-            onChange={handlePasswordInputChange}
-            className="fiok-input"
-          />
-
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Új jelszó megerősítése"
-            value={passwordData.confirmPassword}
-            onChange={handlePasswordInputChange}
-            className="fiok-input"
-          />
-
+        <div className="fiok-password-area">
           <button
-            type="submit"
-            className="fiok-save-password-btn"
-            disabled={passwordLoading}
+            type="button"
+            className={`fiok-password-btn ${showPasswordForm ? "active" : ""}`}
+            onClick={() => setShowPasswordForm(!showPasswordForm)}
           >
-            {passwordLoading ? "Mentés..." : "Jelszó mentése"}
+            <span>
+              {showPasswordForm ? "Jelszócsere bezárása" : "Jelszó csere"}
+            </span>
+            <span className={`fiok-password-btn-icon ${showPasswordForm ? "active" : ""}`}>
+              +
+            </span>
           </button>
-        </form>
-      </div>
-    </div>
+
+          <div className={`fiok-password-form-wrap ${showPasswordForm ? "open" : ""}`}>
+            <form className="fiok-password-form" onSubmit={handlePasswordChange}>
+              <input
+                type="password"
+                name="currentPassword"
+                placeholder="Jelenlegi jelszó"
+                value={passwordData.currentPassword}
+                onChange={handlePasswordInputChange}
+                className="fiok-input"
+              />
+
+              <input
+                type="password"
+                name="newPassword"
+                placeholder="Új jelszó"
+                value={passwordData.newPassword}
+                onChange={handlePasswordInputChange}
+                className="fiok-input"
+              />
+
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Új jelszó megerősítése"
+                value={passwordData.confirmPassword}
+                onChange={handlePasswordInputChange}
+                className="fiok-input"
+              />
+
+              <button
+                type="submit"
+                className="fiok-save-password-btn"
+                disabled={passwordLoading}
+              >
+                {passwordLoading ? "Mentés..." : "Jelszó mentése"}
+              </button>
+            </form>
+          </div>
+        </div>
       </section>
 
       <section className="fiok-section">
@@ -349,15 +367,13 @@ show("success", data?.message || "A jelszó sikeresen módosítva lett.");
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order, idx) => (
-                  <tr key={idx}>
+                {orders.map((order) => (
+                  <tr key={order.id || order.Id || order.orderId || order.OrderId}>
                     <td>
-                      {order.orderTime
-                        ? new Date(order.orderTime).toLocaleString()
-                        : "-"}
+                      {order.orderTime ? new Date(order.orderTime).toLocaleString() : "-"}
                     </td>
-                    <td>{order.customerName || order.CustomerName || "-"}</td>
-                    <td>{getOrderTotal(order.orderItems || order.OrderItems)} Ft</td>
+                    <td>{order.customerName || "-"}</td>
+                    <td>{getOrderTotal(order.orderItems)} Ft</td>
                     <td>{getStatusText(order.status)}</td>
                   </tr>
                 ))}
@@ -372,6 +388,6 @@ show("success", data?.message || "A jelszó sikeresen módosítva lett.");
       </button>
     </div>
   );
-};
+}
 
 export default Fiokosszesito;

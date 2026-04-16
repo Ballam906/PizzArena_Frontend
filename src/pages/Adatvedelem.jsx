@@ -1,20 +1,13 @@
+import "../assets/css/Adatvedelem.css";
 function Adatvedelem() {
   return (
-    <div
-      className="page-container"
-      style={{
-        padding: "40px 20px",
-        maxWidth: "1000px",
-        margin: "0 auto",
-        lineHeight: "1.8",
-      }}
-    >
+    <div className="page-container adatvedelem-page">
       <h1>Adatvédelmi tájékoztató</h1>
 
       <p>
-        A PizzArena (a továbbiakban: „Szolgáltató”) elkötelezett a személyes
-        adatok védelme mellett. Jelen adatvédelmi tájékoztató részletesen
-        ismerteti, hogy a weboldal használata, regisztráció, rendelésleadás és
+        A PizzArena a továbbiakban Szolgáltató elkötelezett a személyes adatok
+        védelme mellett. Jelen adatvédelmi tájékoztató részletesen ismerteti,
+        hogy a weboldal használata, regisztráció, rendelésleadás és
         kapcsolattartás során milyen adatokat gyűjtünk, milyen célból kezeljük
         azokat, mennyi ideig tároljuk, valamint milyen jogok illetik meg a
         felhasználókat.
@@ -22,16 +15,17 @@ function Adatvedelem() {
 
       <h2>1. Az adatkezelő adatai</h2>
       <p>
-        Cégnév: PizzArena <br />
-        Székhely: Magyarország <br />
-        E-mail: info@pizzarena.hu <br />
+        Cégnév: PizzArena
+        <br />
+        Székhely: Magyarország
+        <br />
+        E-mail: info@pizzarena.hu
+        <br />
         Telefonszám: +36 30 123 4567
       </p>
 
       <h2>2. A kezelt személyes adatok köre</h2>
-      <p>
-        A szolgáltatásaink igénybevétele során az alábbi adatokat kezelhetjük:
-      </p>
+      <p>A szolgáltatásaink igénybevétele során az alábbi adatokat kezelhetjük:</p>
       <ul>
         <li>teljes név</li>
         <li>e-mail cím</li>
@@ -39,7 +33,7 @@ function Adatvedelem() {
         <li>szállítási és számlázási cím</li>
         <li>fiókregisztrációhoz szükséges adatok</li>
         <li>megrendelt termékek és rendelések részletei</li>
-        <li>fizetéssel kapcsolatos információk (a szükséges mértékben)</li>
+        <li>fizetéssel kapcsolatos információk a szükséges mértékben</li>
         <li>IP-cím, böngésző típusa, technikai naplóadatok</li>
         <li>kapcsolatfelvétel során megadott üzenetek</li>
       </ul>
@@ -59,25 +53,21 @@ function Adatvedelem() {
       </ul>
 
       <h2>4. Az adatkezelés jogalapja</h2>
-      <p>
-        Az adatkezelés jogalapja:
-      </p>
+      <p>Az adatkezelés jogalapja:</p>
       <ul>
-        <li>a felhasználó önkéntes hozzájárulása,</li>
-        <li>a szerződés teljesítése (pl. rendelés leadása esetén),</li>
-        <li>jogi kötelezettség teljesítése,</li>
-        <li>a Szolgáltató jogos érdeke (pl. rendszerbiztonság).</li>
+        <li>a felhasználó önkéntes hozzájárulása</li>
+        <li>a szerződés teljesítése</li>
+        <li>jogi kötelezettség teljesítése</li>
+        <li>a Szolgáltató jogos érdeke</li>
       </ul>
 
       <h2>5. Az adatok tárolásának időtartama</h2>
-      <p>
-        A személyes adatokat csak a szükséges ideig kezeljük:
-      </p>
+      <p>A személyes adatokat csak a szükséges ideig kezeljük:</p>
       <ul>
-        <li>rendelési adatok: a jogszabályban előírt ideig,</li>
-        <li>regisztrációs adatok: a fiók törléséig vagy inaktivitásig,</li>
-        <li>kapcsolatfelvételi adatok: az ügy lezárásáig,</li>
-        <li>technikai naplóadatok: korlátozott ideig.</li>
+        <li>rendelési adatok: a jogszabályban előírt ideig</li>
+        <li>regisztrációs adatok: a fiók törléséig vagy inaktivitásig</li>
+        <li>kapcsolatfelvételi adatok: az ügy lezárásáig</li>
+        <li>technikai naplóadatok: korlátozott ideig</li>
       </ul>
 
       <h2>6. Adattovábbítás és adatfeldolgozók</h2>
@@ -98,8 +88,8 @@ function Adatvedelem() {
 
       <h2>7. Cookie-k és technikai adatok</h2>
       <p>
-        Weboldalunk a megfelelő működés érdekében sütiket (cookie-kat)
-        használhat. Ezek célja lehet:
+        Weboldalunk a megfelelő működés érdekében sütiket használhat. Ezek célja
+        lehet:
       </p>
       <ul>
         <li>bejelentkezés fenntartása</li>
@@ -107,9 +97,7 @@ function Adatvedelem() {
         <li>felhasználói élmény javítása</li>
         <li>hibák és teljesítmény mérése</li>
       </ul>
-      <p>
-        A sütik használatát a böngésző beállításaiban korlátozhatod.
-      </p>
+      <p>A sütik használatát a böngésző beállításaiban korlátozhatod.</p>
 
       <h2>8. Adatbiztonság</h2>
       <p>
@@ -125,9 +113,7 @@ function Adatvedelem() {
       </ul>
 
       <h2>9. A felhasználók jogai</h2>
-      <p>
-        A felhasználó jogosult:
-      </p>
+      <p>A felhasználó jogosult:</p>
       <ul>
         <li>tájékoztatást kérni a kezelt adatairól</li>
         <li>helyesbítést kérni</li>
@@ -154,7 +140,7 @@ function Adatvedelem() {
         Telefonszám: +36 30 123 4567
       </p>
 
-      <p style={{ marginTop: "40px", fontSize: "14px", color: "#666" }}>
+      <p className="adatvedelem-frissites">
         Utolsó frissítés: 2026. 04. 10.
       </p>
     </div>

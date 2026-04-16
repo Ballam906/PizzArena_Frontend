@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCart } from "../context/CartContext.jsx";
 import "../assets/css/TermekLista.css";
 
@@ -9,68 +9,106 @@ export function TermekLista({ category = "Összes termék", sort = "none" }) {
 
   useEffect(() => {
     async function fetchData() {
+      const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
       try {
-        const token = localStorage.getItem("token");
+        const categoryResponse = await fetch("/api/Category", { headers });
 
-        const catRes = await fetch("/api/Category", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
-        });
-
-        if (!catRes.ok) {
-          throw new Error(`Category HTTP ${catRes.status}`);
+        if (!categoryResponse.ok) {
+          setCategories([]);
+          setProducts([]);
+          return;
         }
 
-        const catData = await catRes.json();
-        setCategories(catData);
+        const categoryData = await categoryResponse.json();
+        const finalCategories = Array.isArray(categoryData)
+          ? categoryData
+          : categoryData.result || [];
 
-        const prodRes = await fetch("/api/Product", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
-        });
+        setCategories(finalCategories);
 
-        if (!prodRes.ok) {
-          throw new Error(`Product HTTP ${prodRes.status}`);
+        const productResponse = await fetch("/api/Product", { headers });
+
+        if (!productResponse.ok) {
+          setProducts([]);
+          return;
         }
 
-        const prodData = await prodRes.json();
-
-        const finalProducts = Array.isArray(prodData)
-          ? prodData
-          : (prodData.result || []);
+        const productData = await productResponse.json();
+        const finalProducts = Array.isArray(productData)
+          ? productData
+          : productData.result || [];
 
         setProducts(finalProducts);
-      } catch (error) {
-        console.error("Hiba az adatok lekérésekor:", error);
+      } catch {
+        setCategories([]);
+        setProducts([]);
       }
     }
 
     fetchData();
   }, []);
 
+  const categoryMap = useMemo(() => {
+    const map = {};
+
+    for (let i = 0; i < categories.length; i++) {
+      const categoryItem = categories[i];
+      const id = categoryItem.id || categoryItem.Id;
+      const name = categoryItem.name || categoryItem.Name || "Ismeretlen";
+      map[id] = name;
+    }
+
+    return map;
+  }, [categories]);
+
   function getCategoryName(categoryId) {
-    const found = categories.find((c) => c.id === categoryId);
-    return found ? found.name : "Ismeretlen";
+    return categoryMap[categoryId] || "Ismeretlen";
   }
 
-  let filteredProducts = products.filter((product) => {
-    if (category === "Összes termék") return true;
+  const filteredProducts = useMemo(() => {
+    let result = products.filter((product) => {
+      const isAvailable = product.isAvailable ?? product.IsAvailable ?? false;
+      return isAvailable === true;
+    });
 
-    const productCatName = getCategoryName(product.categoryId);
+    if (category !== "Összes termék") {
+      result = result.filter((product) => {
+        const productCategoryId = product.categoryId || product.CategoryId;
+        const productCategoryName = getCategoryName(productCategoryId);
 
-    return (
-      productCatName
-        .toLowerCase()
-        .includes(category.toLowerCase().replace("ák", "a")) ||
-      category.toLowerCase().includes(productCatName.toLowerCase())
-    );
-  });
+        return productCategoryName.toLowerCase() === category.toLowerCase();
+      });
+    }
 
-  filteredProducts = [...filteredProducts].sort((a, b) => {
-    if (sort === "price-asc") return a.price - b.price;
-    if (sort === "price-desc") return b.price - a.price;
-    if (sort === "name-asc") return a.name.localeCompare(b.name);
-    if (sort === "name-desc") return b.name.localeCompare(a.name);
-    return 0;
-  });
+    result.sort((a, b) => {
+      const priceA = Number(a.price || a.Price) || 0;
+      const priceB = Number(b.price || b.Price) || 0;
+      const nameA = a.name || a.Name || "";
+      const nameB = b.name || b.Name || "";
+
+      if (sort === "price-asc") {
+        return priceA - priceB;
+      }
+
+      if (sort === "price-desc") {
+        return priceB - priceA;
+      }
+
+      if (sort === "name-asc") {
+        return nameA.localeCompare(nameB);
+      }
+
+      if (sort === "name-desc") {
+        return nameB.localeCompare(nameA);
+      }
+
+      return 0;
+    });
+
+    return result;
+  }, [products, category, sort, categoryMap]);
 
   return (
     <div className="products-container">
@@ -80,38 +118,46 @@ export function TermekLista({ category = "Összes termék", sort = "none" }) {
         </p>
       ) : (
         <div className="products-grid">
-          {filteredProducts.map((p) => (
-            <div key={p.id} className="product-card">
-              <img
-                src={
-                  p.image_Url && p.image_Url !== "string"
-                    ? p.image_Url
-                    : "https://via.placeholder.com/150"
-                }
-                alt={p.name}
-                className="product-image"
-              />
+          {filteredProducts.map((product) => {
+            const productId = product.id || product.Id;
+            const productName = product.name || product.Name || "Névtelen termék";
+            const productImage =
+              product.image_Url ||
+              product.Image_Url ||
+              product.imageUrl ||
+              "https://via.placeholder.com/150";
+            const productCategoryId = product.categoryId || product.CategoryId;
+            const productDescription = product.description || product.Description || "";
+            const productPrice = Number(product.price || product.Price) || 0;
 
-              <h3 className="product-title">{p.name}</h3>
+            return (
+              <div key={productId} className="product-card">
+                <img
+                  src={productImage}
+                  alt={productName}
+                  className="product-image"
+                />
 
-              <p className="product-category">
-                {getCategoryName(p.categoryId)}
-              </p>
+                <h3 className="product-title">{productName}</h3>
 
-              <p className="product-description">
-                {p.description}
-              </p>
+                <p className="product-category">
+                  {getCategoryName(productCategoryId)}
+                </p>
 
-              <p className="product-price">{p.price} Ft</p>
+                <p className="product-description">{productDescription}</p>
 
-              <button
-                onClick={() => add({ ...p, image: p.image_Url })}
-                className="product-button"
-              >
-                Kosárba
-              </button>
-            </div>
-          ))}
+                <p className="product-price">{productPrice} Ft</p>
+
+                <button
+                  type="button"
+                  onClick={() => add({ ...product, image: productImage })}
+                  className="product-button"
+                >
+                  Kosárba
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

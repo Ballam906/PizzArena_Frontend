@@ -1,0 +1,12 @@
+.adatvedelem-page {
+  padding: 40px 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+.adatvedelem-frissites {
+  margin-top: 40px;
+  font-size: 14px;
+  color: #666;
+}

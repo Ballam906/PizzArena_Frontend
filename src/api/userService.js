@@ -1,6 +1,5 @@
-export async function getPublicUser(id) {
-  const res = await fetch(`/api/User/${id}`);
-
+async function fetchUserData(url) {
+  const res = await fetch(url);
   const text = await res.text();
 
   if (res.status === 401) {
@@ -11,35 +10,23 @@ export async function getPublicUser(id) {
     throw new Error("Sikertelen lekérés.");
   }
 
-  let data;
-  try {
-    data = text ? JSON.parse(text) : {};
-  } catch {
-    throw new Error("Érvénytelen JSON válasz érkezett a szervertől.");
+  let data = {};
+
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error("Érvénytelen JSON válasz érkezett a szervertől.");
+    }
   }
 
   return data.result;
 }
 
+export async function getPublicUser(id) {
+  return fetchUserData(`/api/User/${id}`);
+}
+
 export async function getAllPublicUsers() {
-  const res = await fetch("/api/User");
-
-  const text = await res.text();
-
-  if (res.status === 401) {
-    throw new Error("Nincs jogosultság.");
-  }
-
-  if (!res.ok) {
-    throw new Error("Sikertelen lekérés.");
-  }
-
-  let data;
-  try {
-    data = text ? JSON.parse(text) : {};
-  } catch {
-    throw new Error("Érvénytelen JSON válasz érkezett a szervertől.");
-  }
-
-  return data.result;
+  return fetchUserData("/api/User");
 }

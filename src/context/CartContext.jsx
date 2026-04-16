@@ -5,57 +5,122 @@ const CartContext = createContext(null);
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
 
-  function normalizeProduct(t) {
-    const id = t?.id ?? t?.Id;
-    const name = t?.nev ?? t?.name ?? t?.Name;
-    const price = t?.ar ?? t?.price ?? t?.Price;
-    const image = t?.kep_Url ?? t?.kepUrl ?? t?.image_Url ?? t?.Image_Url ?? t?.imageUrl;
-    return { id, name, price, image };
+  function normalizeProduct(product) {
+    const id = product?.id || product?.Id;
+    const name = product?.name || "";
+    const price = product?.price || 0;
+    const image = product?.image_Url || "";
+
+    return {
+      id,
+      name,
+      price,
+      image
+    };
   }
 
   function add(product) {
-    const p = normalizeProduct(product);
-    if (p.id == null) return;
+    const normalizedProduct = normalizeProduct(product);
 
-    setItems((prev) => {
-      const existing = prev.find((x) => x.id === p.id);
-      if (existing) return prev.map((x) => (x.id === p.id ? { ...x, qty: x.qty + 1 } : x));
-      return [...prev, { ...p, qty: 1 }];
+    if (!normalizedProduct.id) {
+      return;
+    }
+
+    setItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === normalizedProduct.id);
+
+      if (existingItem) {
+        return prevItems.map((item) => {
+          if (item.id === normalizedProduct.id) {
+            return {
+              ...item,
+              qty: item.qty + 1
+            };
+          }
+
+          return item;
+        });
+      }
+
+      return [
+        ...prevItems,
+        {
+          ...normalizedProduct,
+          qty: 1
+        }
+      ];
     });
   }
 
   function inc(id) {
-    setItems((prev) => prev.map((x) => (x.id === id ? { ...x, qty: x.qty + 1 } : x)));
-  }
+    setItems((prevItems) =>
+      prevItems.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            qty: item.qty + 1
+          };
+        }
 
-  function dec(id) {
-    setItems((prev) =>
-      prev
-        .map((x) => (x.id === id ? { ...x, qty: Math.max(0, x.qty - 1) } : x))
-        .filter((x) => x.qty > 0)
+        return item;
+      })
     );
   }
 
+  function dec(id) {
+    setItems((prevItems) => {
+      const updatedItems = prevItems.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            qty: item.qty - 1
+          };
+        }
+
+        return item;
+      });
+
+      return updatedItems.filter((item) => item.qty > 0);
+    });
+  }
+
   function remove(id) {
-    setItems((prev) => prev.filter((x) => x.id !== id));
+    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   }
 
   function clear() {
     setItems([]);
   }
 
-  const total = useMemo(
-    () => items.reduce((sum, x) => sum + (Number(x.price) || 0) * (Number(x.qty) || 0), 0),
-    [items]
-  );
+  const total = useMemo(() => {
+    return items.reduce((sum, item) => {
+      const price = Number(item.price) || 0;
+      const qty = Number(item.qty) || 0;
+      return sum + price * qty;
+    }, 0);
+  }, [items]);
 
-  const value = useMemo(() => ({ items, add, inc, dec, remove, clear, total }), [items, total]);
+  const value = useMemo(() => {
+    return {
+      items,
+      add,
+      inc,
+      dec,
+      remove,
+      clear,
+      total
+    };
+  }, [items, total]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart must be used inside <CartProvider>");
-  return ctx;
+  const context = useContext(CartContext);
+
+  if (!context) {
+    throw new Error("A useCart csak CartProvider-en belül használható.");
+  }
+
+  return context;
 }

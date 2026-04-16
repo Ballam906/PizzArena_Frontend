@@ -6,8 +6,13 @@ import pizzarenaLogo from "../assets/images/uj_pizzarena_logo.png";
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const closeMenu = () => setMenuOpen(false);
-  const toggleMenu = () => setMenuOpen((prev) => !prev);
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
+  function toggleMenu() {
+    setMenuOpen((prev) => !prev);
+  }
 
   return (
     <header className="header">
@@ -17,11 +22,11 @@ function Header() {
         </Link>
 
         <button
+          type="button"
           className={`nav__toggle ${menuOpen ? "active" : ""}`}
           onClick={toggleMenu}
-          aria-label="Menü megnyitása"
+          aria-label={menuOpen ? "Menü bezárása" : "Menü megnyitása"}
           aria-expanded={menuOpen}
-          type="button"
         >
           <span></span>
           <span></span>

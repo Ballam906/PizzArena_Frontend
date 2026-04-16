@@ -4,76 +4,162 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import Select
 import time
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 wait = WebDriverWait(driver, 10)
 
-try:
-    driver.get("http://localhost:5173")
-    driver.maximize_window()
+def pause():
+    time.sleep(1.5)
+    
+def scroll_smooth():
+    height = driver.execute_script("return document.body.scrollHeight")
 
-    rendel_button = wait.until(
-        EC.element_to_be_clickable((By.LINK_TEXT, "Rendelés"))
-    )
-    rendel_button.click()
+    current = 0
+    while current < height:
+        driver.execute_script(f"""
+            window.scrollTo({{
+                top: {current},
+                behavior: 'smooth'
+            }});
+        """)
+        current += 250
+        time.sleep(1.2)
 
-    wait.until(EC.presence_of_element_located((By.XPATH, "//h2[text()='Bejelentkezés']")))
-
-    username_input = wait.until(
-        EC.presence_of_element_located((By.XPATH, "//input[@placeholder='pl. Pizzafan123']"))
-    )
-    password_input = driver.find_element(By.XPATH, "//input[@placeholder='••••••••']")
-    login_button = driver.find_element(By.XPATH, "//button[text()='Belépés']")
-
-    username_input.send_keys("tesztuser")
-    password_input.send_keys("teszt123")
-    login_button.click()
-
-    time.sleep(2)
-
-    current_url = driver.current_url
-    print("Aktuális URL a bejelentkezés után:", current_url)
-
-    driver.get("http://localhost:5173/rendeles")
     time.sleep(1)
 
-    guest_button = wait.until(
-        EC.element_to_be_clickable((By.XPATH, "//button[text()='Vendégként rendelek']"))
+    # vissza tetejére
+    driver.execute_script("""
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    """)
+    time.sleep(1)
+
+try:
+    # 1. Kezdőlap
+    driver.get("http://localhost:5173")
+    driver.maximize_window()
+    pause()
+
+    # # 2. Görgetés a kezdőlapon
+    scroll_smooth()
+    pause()
+
+    # # 3. Rólunk oldal
+    rolunk_gomb = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Éttermeink")))
+    rolunk_gomb.click()
+    scroll_smooth()
+    pause()
+
+    # 4. Rendelés oldal
+    rendeles_gomb = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Add le a rendelésed!")))
+    rendeles_gomb.click()
+    pause()
+    
+    reg_button = driver.find_element(By.XPATH, "//button[text()='Regisztráció']")
+    reg_button.click()
+    pause()
+
+    # 6. Regisztrációs mezők
+    username_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='pl. Pizzafan123']")))
+    email_input = driver.find_element(By.XPATH, "//input[@placeholder='valami@gmail.com']")
+    password_input = driver.find_element(By.XPATH, "//input[@placeholder='••••••••']")
+
+    username_input.send_keys("tesztuser4")
+    email_input.send_keys("teszt@email.com")
+    password_input.send_keys("Teszt123!")
+    pause()
+
+    reg_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//form[@id='register-form']//button[@type='submit']")))
+    reg_button.click()
+    pause()
+
+    # 7. Bejelentkezés
+    login_tab = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Bejelentkezés']")))
+    login_tab.click()
+    pause()
+
+    login_username = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='pl. Pizzafan123']")))
+    login_password = driver.find_element(By.XPATH, "//input[@placeholder='••••••••']")
+
+    login_username.send_keys("tesztuser4")
+    login_password.send_keys("Teszt123!")
+    pause()
+
+    login_button = driver.find_element(By.XPATH, "//button[text()='Belépés']")
+    login_button.click()
+    pause()
+
+    # 8. Első étel kosárba
+    rendel_gomb = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Kosárba')]")))
+    rendel_gomb.click()
+    pause()
+
+    # 9. Kosár megnyitása
+    kosar_gomb = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[contains(text(),'🛒')]")))
+    kosar_gomb.click()
+    pause()
+
+
+
+    # 10. Hibás kitöltés
+    restaurant_select = wait.until(
+        EC.presence_of_element_located((By.XPATH, "//select[contains(@class,'kosar-form-input')]"))
     )
-    guest_button.click()
 
-    time.sleep(2)
-    print("Vendégként rendelek gomb működik.")
+    nev_input = driver.find_element(By.XPATH, "//input[@placeholder='Név']")
+    telefon_input = driver.find_element(By.XPATH, "//input[@placeholder='Telefonszám']")
+    email_input = driver.find_element(By.XPATH, "//input[@placeholder='Email']")
+    varos_input = driver.find_element(By.XPATH, "//input[@placeholder='Város']")
+    iranyitoszam_input = driver.find_element(By.XPATH, "//input[@placeholder='Irányítószám']")
+    utca_input = driver.find_element(By.XPATH, "//input[@placeholder='Utca, házszám']")
+    egyeb_input = driver.find_element(By.XPATH, "//textarea[@placeholder='Egyéb (emelet, ajtó, kapukód, stb.)']")
 
-    driver.get("http://localhost:5173/rendeles")
-    reg_tab = wait.until(
-        EC.element_to_be_clickable((By.XPATH, "//button[text()='Regisztráció']"))
-    )
-    reg_tab.click()
+    # étterem kiválasztása (ne az első "Válassz éttermet" opció maradjon)
+    Select(restaurant_select).select_by_index(1)
+    pause()
 
-    wait.until(EC.presence_of_element_located((By.XPATH, "//h2[text()='Regisztráció']")))
+    # szándékosan hibás adatok
+    nev_input.send_keys("a")
+    telefon_input.send_keys("123")
+    email_input.send_keys("rosszemail")
+    varos_input.send_keys("x")
+    iranyitoszam_input.send_keys("11")
+    utca_input.send_keys("y")
+    egyeb_input.send_keys("teszt")
+    pause()
 
-    reg_username = wait.until(
-        EC.presence_of_element_located((By.XPATH, "//input[@placeholder='pl. Pizzafan123']"))
-    )
-    reg_email = driver.find_element(By.XPATH, "//input[@placeholder='valami@gmail.com']")
-    reg_password = driver.find_element(By.XPATH, "//input[@placeholder='••••••••']")
+    rendeles_gomb = driver.find_element(By.XPATH, "//button[contains(text(),'Rendelés leadása')]")
+    rendeles_gomb.click()
+    pause()
 
-    reg_username.send_keys("ujtesztuser")
-    reg_email.send_keys("ujteszt@email.com")
-    reg_password.send_keys("Teszt123!")
+    # 11. Javított kitöltés
+    nev_input.clear()
+    telefon_input.clear()
+    email_input.clear()
+    varos_input.clear()
+    iranyitoszam_input.clear()
+    utca_input.clear()
+    egyeb_input.clear()
 
-    reg_submit = driver.find_element(By.XPATH, "//button[@type='submit' and text()='Regisztráció']")
-    reg_submit.click()
+    nev_input.send_keys("Teszt Elek")
+    telefon_input.send_keys("06301234567")
+    email_input.send_keys("tesztelek@email.com")
+    varos_input.send_keys("Budapest")
+    iranyitoszam_input.send_keys("1117")
+    utca_input.send_keys("Teszt utca 12")
+    egyeb_input.send_keys("2. emelet, 5-ös ajtó")
+    pause()
 
-    time.sleep(2)
-    print("Regisztrációs folyamat lefutott.")
-
-    print("A Selenium E2E teszt sikeresen lefutott.")
+    rendeles_gomb.click()
+    pause()
+    print("A teszt lefutott.")
 
 except Exception as e:
-    print(f"Hiba történt: {e}")
+    print("Hiba:", e)
     driver.save_screenshot("error.png")
 
 finally:

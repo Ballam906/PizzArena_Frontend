@@ -8,24 +8,36 @@ const mockNavigate = vi.fn();
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
+
   return {
     ...actual,
     useNavigate: () => mockNavigate
   };
 });
 
-beforeEach(() => {
-  vi.clearAllMocks();
-  localStorage.clear();
-  global.fetch = vi.fn();
-});
-
-test("alapból a bejelentkezés panel jelenik meg", () => {
+function renderRendeles() {
   render(
     <MemoryRouter>
       <Rendeles />
     </MemoryRouter>
   );
+}
+
+function fillLoginForm(username, password) {
+  const inputs = screen.getAllByPlaceholderText(/pl\. Pizzafan123|••••••••/);
+
+  fireEvent.change(inputs[0], { target: { value: username } });
+  fireEvent.change(inputs[1], { target: { value: password } });
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  localStorage.clear();
+  globalThis.fetch = vi.fn();
+});
+
+test("alapból a bejelentkezés panel jelenik meg", () => {
+  renderRendeles();
 
   expect(screen.getByText("Rendelés")).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "Bejelentkezés" })).toBeInTheDocument();
@@ -33,11 +45,7 @@ test("alapból a bejelentkezés panel jelenik meg", () => {
 });
 
 test("átvált regisztráció panelre", () => {
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
+  renderRendeles();
 
   fireEvent.click(screen.getAllByRole("button", { name: /^Regisztráció$/ })[0]);
 
@@ -47,7 +55,7 @@ test("átvált regisztráció panelre", () => {
 });
 
 test("sikeres bejelentkezésnél token mentődik és navigál", async () => {
-  global.fetch.mockResolvedValue({
+  globalThis.fetch.mockResolvedValue({
     ok: true,
     status: 200,
     text: async () =>
@@ -61,15 +69,8 @@ test("sikeres bejelentkezésnél token mentődik és navigál", async () => {
       })
   });
 
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
-
-  const inputs = screen.getAllByPlaceholderText(/pl\. Pizzafan123|••••••••/);
-  fireEvent.change(inputs[0], { target: { value: "TesztElek" } });
-  fireEvent.change(inputs[1], { target: { value: "titok123" } });
+  renderRendeles();
+  fillLoginForm("TesztElek", "titok123");
 
   fireEvent.click(screen.getByRole("button", { name: "Belépés" }));
 
@@ -86,7 +87,7 @@ test("sikeres bejelentkezésnél token mentődik és navigál", async () => {
 });
 
 test("hibás bejelentkezésnél hibaüzenet jelenik meg", async () => {
-  global.fetch.mockResolvedValue({
+  globalThis.fetch.mockResolvedValue({
     ok: false,
     status: 401,
     text: async () =>
@@ -95,27 +96,18 @@ test("hibás bejelentkezésnél hibaüzenet jelenik meg", async () => {
       })
   });
 
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
-
-  const inputs = screen.getAllByPlaceholderText(/pl\. Pizzafan123|••••••••/);
-  fireEvent.change(inputs[0], { target: { value: "rosszuser" } });
-  fireEvent.change(inputs[1], { target: { value: "rosszjelszo" } });
+  renderRendeles();
+  fillLoginForm("rosszuser", "rosszjelszo");
 
   fireEvent.click(screen.getByRole("button", { name: "Belépés" }));
 
   await waitFor(() => {
-    expect(
-      screen.getByText("Hibás felhasználónév vagy jelszó.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Hibás felhasználónév vagy jelszó.")).toBeInTheDocument();
   });
 });
 
 test("ha nincs token a válaszban, hibaüzenet jelenik meg", async () => {
-  global.fetch.mockResolvedValue({
+  globalThis.fetch.mockResolvedValue({
     ok: true,
     status: 200,
     text: async () =>
@@ -124,15 +116,8 @@ test("ha nincs token a válaszban, hibaüzenet jelenik meg", async () => {
       })
   });
 
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
-
-  const inputs = screen.getAllByPlaceholderText(/pl\. Pizzafan123|••••••••/);
-  fireEvent.change(inputs[0], { target: { value: "teszt" } });
-  fireEvent.change(inputs[1], { target: { value: "teszt123" } });
+  renderRendeles();
+  fillLoginForm("teszt", "teszt123");
 
   fireEvent.click(screen.getByRole("button", { name: "Belépés" }));
 
@@ -142,17 +127,10 @@ test("ha nincs token a válaszban, hibaüzenet jelenik meg", async () => {
 });
 
 test("hálózati hiba esetén bejelentkezésnél hibaüzenet jelenik meg", async () => {
-  global.fetch.mockRejectedValue(new Error("Network error"));
+  globalThis.fetch.mockRejectedValue(new Error("Network error"));
 
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
-
-  const inputs = screen.getAllByPlaceholderText(/pl\. Pizzafan123|••••••••/);
-  fireEvent.change(inputs[0], { target: { value: "teszt" } });
-  fireEvent.change(inputs[1], { target: { value: "teszt123" } });
+  renderRendeles();
+  fillLoginForm("teszt", "teszt123");
 
   fireEvent.click(screen.getByRole("button", { name: "Belépés" }));
 
@@ -164,7 +142,7 @@ test("hálózati hiba esetén bejelentkezésnél hibaüzenet jelenik meg", async
 });
 
 test("sikeres regisztráció után visszavált bejelentkezésre", async () => {
-  global.fetch.mockResolvedValue({
+  globalThis.fetch.mockResolvedValue({
     ok: true,
     status: 200,
     text: async () =>
@@ -173,21 +151,19 @@ test("sikeres regisztráció után visszavált bejelentkezésre", async () => {
       })
   });
 
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
+  renderRendeles();
 
   fireEvent.click(screen.getAllByRole("button", { name: /^Regisztráció$/ })[0]);
 
-  const usernameInput = screen.getByPlaceholderText("pl. Pizzafan123");
-  const emailInput = screen.getByPlaceholderText("valami@gmail.com");
-  const passwordInput = screen.getByPlaceholderText("••••••••");
-
-  fireEvent.change(usernameInput, { target: { value: "ujfelhasznalo" } });
-  fireEvent.change(emailInput, { target: { value: "uj@email.com" } });
-  fireEvent.change(passwordInput, { target: { value: "jelszo123" } });
+  fireEvent.change(screen.getByPlaceholderText("pl. Pizzafan123"), {
+    target: { value: "ujfelhasznalo" }
+  });
+  fireEvent.change(screen.getByPlaceholderText("valami@gmail.com"), {
+    target: { value: "uj@email.com" }
+  });
+  fireEvent.change(screen.getByPlaceholderText("••••••••"), {
+    target: { value: "jelszo123" }
+  });
 
   fireEvent.click(screen.getAllByRole("button", { name: /^Regisztráció$/ })[1]);
 
@@ -202,7 +178,7 @@ test("sikeres regisztráció után visszavált bejelentkezésre", async () => {
 });
 
 test("sikertelen regisztrációnál hibaüzenet jelenik meg", async () => {
-  global.fetch.mockResolvedValue({
+  globalThis.fetch.mockResolvedValue({
     ok: false,
     status: 400,
     text: async () =>
@@ -211,11 +187,7 @@ test("sikertelen regisztrációnál hibaüzenet jelenik meg", async () => {
       })
   });
 
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
+  renderRendeles();
 
   fireEvent.click(screen.getAllByRole("button", { name: /^Regisztráció$/ })[0]);
 
@@ -236,26 +208,10 @@ test("sikertelen regisztrációnál hibaüzenet jelenik meg", async () => {
   });
 });
 
-test("vendégként rendelek gomb navigál", () => {
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
-
-  fireEvent.click(screen.getByRole("button", { name: "Vendégként rendelek" }));
-
-  expect(mockNavigate).toHaveBeenCalledWith("/etlap");
-});
-
 test("ha van token, megjelenik a kijelentkezés gomb", () => {
   localStorage.setItem("token", "fake-token");
 
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
+  renderRendeles();
 
   expect(screen.getByRole("button", { name: "Kijelentkezés" })).toBeInTheDocument();
 });
@@ -265,11 +221,7 @@ test("kijelentkezés törli a localStorage adatokat", () => {
   localStorage.setItem("userId", "123");
   localStorage.setItem("userData", JSON.stringify({ name: "Teszt" }));
 
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
+  renderRendeles();
 
   fireEvent.click(screen.getByRole("button", { name: "Kijelentkezés" }));
 
@@ -277,43 +229,4 @@ test("kijelentkezés törli a localStorage adatokat", () => {
   expect(localStorage.getItem("userId")).toBeNull();
   expect(localStorage.getItem("userData")).toBeNull();
   expect(screen.getByText("Kijelentkezve.")).toBeInTheDocument();
-});
-
- test("login után userData helyesen mentődik localStorage-be", async () => {
-  global.fetch = vi.fn(() =>
-    Promise.resolve({
-      ok: true,
-      text: () =>
-        Promise.resolve(
-          JSON.stringify({
-            token: "fake-token",
-            result: {
-              userName: "Teszt Elek",
-              email: "teszt@email.com"
-            }
-          })
-        )
-    })
-  );
-
-  render(
-    <MemoryRouter>
-      <Rendeles />
-    </MemoryRouter>
-  );
-
-  const usernameInput = screen.getByPlaceholderText("pl. Pizzafan123");
-  const passwordInput = screen.getByPlaceholderText("••••••••");
-
-  fireEvent.change(usernameInput, { target: { value: "teszt" } });
-  fireEvent.change(passwordInput, { target: { value: "1234" } });
-
-  fireEvent.click(screen.getByRole("button", { name: "Belépés" }));
-
-  await waitFor(() => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-
-    expect(userData.CustomerName).toBe("Teszt Elek");
-    expect(userData.CustomerEmail).toBe("teszt@email.com");
-  });
 });

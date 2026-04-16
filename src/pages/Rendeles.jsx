@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../assets/css/Rendeles.css";
 
@@ -15,12 +15,10 @@ function Rendeles() {
 
   const [notice, setNotice] = useState(null);
 
-  const isAuthenticated = useMemo(() => {
-    const t = localStorage.getItem("token");
-    return !!t && t !== "undefined" && t !== "null";
-  }, [notice]);
+  const token = localStorage.getItem("token");
+  const isAuthenticated = !!token && token !== "undefined" && token !== "null";
 
-  function show(type, text) {
+  function showNotice(type, text) {
     setNotice({ type, text });
   }
 
@@ -32,11 +30,11 @@ function Rendeles() {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("userData");
-    show("info", "Kijelentkezve.");
+    showNotice("info", "Kijelentkezve.");
   }
 
-  async function readJsonSafe(res) {
-    const text = await res.text();
+  async function readJsonSafe(response) {
+    const text = await response.text();
 
     try {
       return text ? JSON.parse(text) : {};
@@ -45,112 +43,132 @@ function Rendeles() {
     }
   }
 
-async function handleLogin(e) {
-  e.preventDefault();
-  clearNotice();
-
-  const payload = {
-    userName: loginUsername.trim(),
-    password: loginPassword
-  };
-
-  let res;
-  try {
-    res = await fetch("/api/User/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-  } catch {
-    show("error", "Hálózati hiba. Ellenőrizd a backend futását.");
-    return;
-  }
-
-  const data = await readJsonSafe(res);
-  console.log("LOGIN RESPONSE:", data);
-
-  if (!res.ok) {
-    show("error", data?.message || data?.raw || "Sikertelen bejelentkezés.");
-    return;
-  }
-
-  if (!data?.token) {
-    show("error", data?.message || data?.raw || "Nem sikerült bejelentkezni (nincs token).");
-    return;
-  }
-
-  localStorage.setItem("token", data.token);
-
-  localStorage.setItem(
-    "userData",
-    JSON.stringify({
-      CustomerName: data?.result?.userName || "",
-      CustomerEmail: data?.result?.email || ""
-    })
-  );
-
-  show("success", data?.message || "Sikeres bejelentkezés!");
-  navigate("/etlap");
-}
-
-  async function handleRegister(e) {
+  async function handleLogin(e) {
     e.preventDefault();
     clearNotice();
 
+    const userName = loginUsername.trim();
+
+    if (!userName || !loginPassword) {
+      showNotice("error", "A felhasználónév és a jelszó megadása kötelező.");
+      return;
+    }
+
     const payload = {
-      userName: registerUsername.trim(),
-      email: registerEmail.trim(),
-      password: registerPassword
+      userName: userName,
+      password: loginPassword
     };
 
-    let res;
+    let response;
+
     try {
-      res = await fetch("/api/User/register", {
+      response = await fetch("/api/User/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
     } catch {
-      show("error", "Hálózati hiba. Ellenőrizd a backend futását.");
+      showNotice("error", "Hálózati hiba. Ellenőrizd a backend futását.");
       return;
     }
 
-    const data = await readJsonSafe(res); 
-    console.log("LOGIN RESPONSE:", data);
-    console.log("TOKEN:", data?.token);
-    console.log("RESULT TOKEN:", data?.result?.token);
-    console.log("REGISTER RESPONSE:", data);
+    const data = await readJsonSafe(response);
 
-    if (!res.ok) {
-      show("error", data?.message || data?.raw || "Sikertelen regisztráció.");
+    if (!response.ok) {
+      showNotice("error", data?.message || data?.raw || "Sikertelen bejelentkezés.");
       return;
     }
 
-    show("success", data?.message || "Sikeres regisztráció. Most jelentkezz be.");
+    if (!data?.token) {
+      showNotice("error", data?.message || data?.raw || "Nem sikerült bejelentkezni.");
+      return;
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem(
+      "userData",
+      JSON.stringify({
+        CustomerName: data?.result?.userName || userName,
+        CustomerEmail: data?.result?.email || ""
+      })
+    );
+
+    showNotice("success", data?.message || "Sikeres bejelentkezés.");
+    navigate("/etlap");
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    clearNotice();
+
+    const userName = registerUsername.trim();
+    const email = registerEmail.trim();
+
+    if (!userName || !email || !registerPassword) {
+      showNotice("error", "Minden mező kitöltése kötelező.");
+      return;
+    }
+
+    const payload = {
+      userName: userName,
+      email: email,
+      password: registerPassword
+    };
+
+    let response;
+
+    try {
+      response = await fetch("/api/User/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      showNotice("error", "Hálózati hiba. Ellenőrizd a backend futását.");
+      return;
+    }
+
+    const data = await readJsonSafe(response);
+
+    if (!response.ok) {
+      showNotice("error", data?.message || data?.raw || "Sikertelen regisztráció.");
+      return;
+    }
+
+    showNotice("success", data?.message || "Sikeres regisztráció. Most jelentkezz be.");
     setMode("login");
-    setLoginUsername(registerUsername.trim());
+    setLoginUsername(userName);
     setLoginPassword("");
+    setRegisterPassword("");
   }
 
   return (
     <div className="rendeles-page">
       <div className="rendeles-card">
         <h1 className="rendeles-title">Rendelés</h1>
-        <p className="rendeles-subtitle">Válaszd ki, hogyan szeretnél továbblépni.</p>
+        <p className="rendeles-subtitle">
+          Válaszd ki, hogyan szeretnél továbblépni.
+        </p>
 
         <div className="rendeles-actions">
           <button
-            className={`btn ${mode === "login" ? "btn-primary" : "btn-ghost"}`}
-            onClick={() => { setMode("login"); clearNotice(); }}
             type="button"
+            className={`btn ${mode === "login" ? "btn-primary" : "btn-ghost"}`}
+            onClick={() => {
+              setMode("login");
+              clearNotice();
+            }}
           >
             Bejelentkezés
           </button>
 
           <button
-            className={`btn ${mode === "register" ? "btn-primary" : "btn-ghost"}`}
-            onClick={() => { setMode("register"); clearNotice(); }}
             type="button"
+            className={`btn ${mode === "register" ? "btn-primary" : "btn-ghost"}`}
+            onClick={() => {
+              setMode("register");
+              clearNotice();
+            }}
           >
             Regisztráció
           </button>
@@ -165,6 +183,7 @@ async function handleLogin(e) {
         {mode === "login" && (
           <div className="panel">
             <h2 className="panel-title">Bejelentkezés</h2>
+
             <form onSubmit={handleLogin} className="form">
               <input
                 className="input"
@@ -173,19 +192,26 @@ async function handleLogin(e) {
                 value={loginUsername}
                 onChange={(e) => setLoginUsername(e.target.value)}
               />
-              <input 
-                type="password" 
-                autoComplete="current-password" 
+
+              <input
                 className="input"
+                type="password"
+                autoComplete="current-password"
                 placeholder="••••••••"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
               />
+
               <button className="btn btn-primary btn-wide" type="submit">
                 Belépés
               </button>
+
               {isAuthenticated && (
-                <button className="btn btn-ghost btn-wide" type="button" onClick={logout}>
+                <button
+                  className="btn btn-ghost btn-wide"
+                  type="button"
+                  onClick={logout}
+                >
                   Kijelentkezés
                 </button>
               )}
@@ -196,7 +222,8 @@ async function handleLogin(e) {
         {mode === "register" && (
           <div className="panel">
             <h2 className="panel-title">Regisztráció</h2>
-            <form onSubmit={handleRegister} className="form">
+
+            <form onSubmit={handleRegister} className="form" id="register-form">
               <input
                 className="input"
                 type="text"
@@ -204,6 +231,7 @@ async function handleLogin(e) {
                 value={registerUsername}
                 onChange={(e) => setRegisterUsername(e.target.value)}
               />
+
               <input
                 className="input"
                 type="email"
@@ -211,6 +239,7 @@ async function handleLogin(e) {
                 value={registerEmail}
                 onChange={(e) => setRegisterEmail(e.target.value)}
               />
+
               <input
                 className="input"
                 type="password"
@@ -218,6 +247,7 @@ async function handleLogin(e) {
                 value={registerPassword}
                 onChange={(e) => setRegisterPassword(e.target.value)}
               />
+
               <button className="btn btn-primary btn-wide" type="submit">
                 Regisztráció
               </button>

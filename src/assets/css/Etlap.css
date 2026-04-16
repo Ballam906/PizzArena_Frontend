@@ -83,3 +83,93 @@ header ul li a:hover {
 .Kateg{
   font-size:12px;
 }
+.etlap-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  padding: 15px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.etlap-category-list {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.szuro_button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.szuro_button.active {
+  background-color: #222;
+  color: #fff;
+}
+
+.etlap-sort {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.etlap-sort-label {
+  margin-right: 8px;
+}
+
+.etlap-sort-select {
+  padding: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.etlap-cart-wrapper {
+  margin-left: auto;
+}
+
+.etlap-cart-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #222;
+  color: #fff;
+  text-decoration: none;
+  font-size: 22px;
+}
+
+.etlap-cart-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.etlap-cart-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: red;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}

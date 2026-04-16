@@ -8,19 +8,22 @@ const mockNavigate = vi.fn();
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
+
   return {
     ...actual,
     useNavigate: () => mockNavigate
   };
 });
 
-beforeEach(() => {
-  vi.clearAllMocks();
-  localStorage.clear();
-  global.fetch = vi.fn();
-});
+function renderFiok() {
+  render(
+    <MemoryRouter>
+      <Fiokosszesito />
+    </MemoryRouter>
+  );
+}
 
-test("megjelenik a cím és user adatok", async () => {
+function setValidUser() {
   localStorage.setItem("token", "fake-token");
   localStorage.setItem(
     "userData",
@@ -29,19 +32,25 @@ test("megjelenik a cím és user adatok", async () => {
       CustomerEmail: "teszt@email.com"
     })
   );
+}
 
-  global.fetch.mockResolvedValue({
+beforeEach(() => {
+  vi.clearAllMocks();
+  localStorage.clear();
+  globalThis.fetch = vi.fn();
+});
+
+test("megjelenik a cím és user adatok", async () => {
+  setValidUser();
+
+  globalThis.fetch.mockResolvedValue({
     ok: true,
     status: 200,
     statusText: "OK",
     text: async () => JSON.stringify([])
   });
 
-  render(
-    <MemoryRouter>
-      <Fiokosszesito />
-    </MemoryRouter>
-  );
+  renderFiok();
 
   expect(screen.getByText("Felhasználói fiók")).toBeInTheDocument();
   expect(screen.getByText(/Teszt Elek/)).toBeInTheDocument();
@@ -53,16 +62,9 @@ test("megjelenik a cím és user adatok", async () => {
 });
 
 test("rendelés megjelenik és státusz szöveggé alakul", async () => {
-  localStorage.setItem("token", "fake-token");
-  localStorage.setItem(
-    "userData",
-    JSON.stringify({
-      CustomerName: "Teszt Elek",
-      CustomerEmail: "teszt@email.com"
-    })
-  );
+  setValidUser();
 
-  global.fetch.mockResolvedValue({
+  globalThis.fetch.mockResolvedValue({
     ok: true,
     status: 200,
     statusText: "OK",
@@ -78,11 +80,7 @@ test("rendelés megjelenik és státusz szöveggé alakul", async () => {
       ])
   });
 
-  render(
-    <MemoryRouter>
-      <Fiokosszesito />
-    </MemoryRouter>
-  );
+  renderFiok();
 
   await waitFor(() => {
     expect(screen.getByText("Feldolgozás alatt")).toBeInTheDocument();
@@ -94,11 +92,7 @@ test("rendelés megjelenik és státusz szöveggé alakul", async () => {
 test("ha nincs userData, átirányít a rendelés oldalra", () => {
   localStorage.setItem("token", "fake-token");
 
-  render(
-    <MemoryRouter>
-      <Fiokosszesito />
-    </MemoryRouter>
-  );
+  renderFiok();
 
   expect(mockNavigate).toHaveBeenCalledWith("/rendeles");
 });
@@ -112,37 +106,22 @@ test("ha nincs token, átirányít a rendelés oldalra", () => {
     })
   );
 
-  render(
-    <MemoryRouter>
-      <Fiokosszesito />
-    </MemoryRouter>
-  );
+  renderFiok();
 
   expect(mockNavigate).toHaveBeenCalledWith("/rendeles");
 });
 
 test("401 esetén hibaüzenet jelenik meg", async () => {
-  localStorage.setItem("token", "fake-token");
-  localStorage.setItem(
-    "userData",
-    JSON.stringify({
-      CustomerName: "Teszt Elek",
-      CustomerEmail: "teszt@email.com"
-    })
-  );
+  setValidUser();
 
-  global.fetch.mockResolvedValue({
+  globalThis.fetch.mockResolvedValue({
     ok: false,
     status: 401,
     statusText: "Unauthorized",
     text: async () => ""
   });
 
-  render(
-    <MemoryRouter>
-      <Fiokosszesito />
-    </MemoryRouter>
-  );
+  renderFiok();
 
   await waitFor(() => {
     expect(
@@ -151,29 +130,40 @@ test("401 esetén hibaüzenet jelenik meg", async () => {
   });
 });
 
-test("kijelentkezés törli a localStorage adatokat és átirányít", async () => {
-  localStorage.setItem("token", "fake-token");
-  localStorage.setItem("userId", "123");
-  localStorage.setItem(
-    "userData",
-    JSON.stringify({
-      CustomerName: "Teszt Elek",
-      CustomerEmail: "teszt@email.com"
-    })
-  );
+test("hálózati hiba esetén hibaüzenet jelenik meg", async () => {
+  setValidUser();
 
-  global.fetch.mockResolvedValue({
+  globalThis.fetch.mockRejectedValue(new Error("Network error"));
+
+  renderFiok();
+
+  await waitFor(() => {
+    expect(screen.getByText(/Hálózati hiba:/)).toBeInTheDocument();
+  });
+});
+
+test("hibás userData esetén törli a localStorage adatot és átirányít", () => {
+  localStorage.setItem("token", "fake-token");
+  localStorage.setItem("userData", "{hibas-json");
+
+  renderFiok();
+
+  expect(localStorage.getItem("userData")).toBeNull();
+  expect(mockNavigate).toHaveBeenCalledWith("/rendeles");
+});
+
+test("kijelentkezés törli a localStorage adatokat és átirányít", async () => {
+  setValidUser();
+  localStorage.setItem("userId", "123");
+
+  globalThis.fetch.mockResolvedValue({
     ok: true,
     status: 200,
     statusText: "OK",
     text: async () => JSON.stringify([])
   });
 
-  render(
-    <MemoryRouter>
-      <Fiokosszesito />
-    </MemoryRouter>
-  );
+  renderFiok();
 
   const logoutButton = await screen.findByText("Kijelentkezés");
   fireEvent.click(logoutButton);

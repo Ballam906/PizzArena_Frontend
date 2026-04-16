@@ -15,25 +15,25 @@ function Etlap() {
 
   useEffect(() => {
     async function fetchCategories() {
-      try {
-        const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
+      try {
         const res = await fetch("/api/Category", {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
 
         if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
+          setCategories(["Összes termék"]);
+          return;
         }
 
         const data = await res.json();
-
         const apiCategories = data.result || data || [];
-        const categoryNames = apiCategories.map((c) => c.name ?? c.Name);
+        const categoryNames = apiCategories.map((category) => category.name || category.Name);
 
         setCategories(["Összes termék", ...categoryNames]);
-      } catch (error) {
-        console.error("Hiba a kategóriák betöltésekor:", error);
+      } catch {
+        setCategories(["Összes termék"]);
       }
     }
 
@@ -42,59 +42,30 @@ function Etlap() {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          flexWrap: "wrap",
-          margin: "20px 0",
-          padding: "15px",
-          background: "#fff",
-          borderRadius: "12px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
-        }}
-      >
+      <div className="etlap-toolbar">
         <strong className="Kateg">Kategóriák:</strong>
 
-        {categories.map((cat) => (
-          <button
-            className="szuro_button"
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            style={{
-              padding: "8px 14px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-              backgroundColor: selectedCategory === cat ? "#222" : "#fff",
-              color: selectedCategory === cat ? "#fff" : "#000",
-              cursor: "pointer",
-              transition: "all 0.2s"
-            }}
-          >
-            {cat}
-          </button>
-        ))}
+        <div className="etlap-category-list">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={`szuro_button ${selectedCategory === category ? "active" : ""}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
 
-        <div
-          style={{
-            marginLeft: "10px",
-            display: "flex",
-            alignItems: "center"
-          }}
-        >
-          <label className="Kateg" style={{ marginRight: "8px" }}>
+        <div className="etlap-sort">
+          <label className="Kateg etlap-sort-label" htmlFor="etlap-sort-select">
             Rendezés:
           </label>
           <select
-            className="Kateg"
+            id="etlap-sort-select"
+            className="Kateg etlap-sort-select"
             value={selectedSort}
             onChange={(e) => setSelectedSort(e.target.value)}
-            style={{
-              padding: "5px",
-              borderRadius: "8px",
-              border: "1px solid #ccc"
-            }}
           >
             <option value="none">Nincs</option>
             <option value="price-asc">Ár szerint növekvő</option>
@@ -104,46 +75,10 @@ function Etlap() {
           </select>
         </div>
 
-        <div style={{ marginLeft: "auto" }}>
-          <Link
-            to="/kosar"
-            style={{
-              position: "relative",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "48px",
-              height: "48px",
-              borderRadius: "50%",
-              background: "#222",
-              color: "#fff",
-              textDecoration: "none",
-              fontSize: "22px"
-            }}
-          >
-            🛒
-            {itemCount > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-6px",
-                  right: "-6px",
-                  minWidth: "22px",
-                  height: "22px",
-                  borderRadius: "50%",
-                  background: "red",
-                  color: "#fff",
-                  fontSize: "12px",
-                  fontWeight: "bold",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "0 6px"
-                }}
-              >
-                {itemCount}
-              </span>
-            )}
+        <div className="etlap-cart-wrapper">
+          <Link to="/kosar" className="etlap-cart-link">
+            <span className="etlap-cart-icon">🛒</span>
+            {itemCount > 0 && <span className="etlap-cart-count">{itemCount}</span>}
           </Link>
         </div>
       </div>

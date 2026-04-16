@@ -1,56 +1,91 @@
 import "../assets/css/Rolunk.css";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react"; // 1. Hookok importálása
+import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export default function Rolunk() {
   const navigate = useNavigate();
-  
-  // 2. State-ek létrehozása
+
   const [ettermeink, setEttermeink] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 3. Adatlekérés az API-ból
   useEffect(() => {
-    fetch("/api/Restaurant/")
-      .then((res) => res.json())
-      .then((data) => {
-        setEttermeink(data);
+    async function fetchRestaurants() {
+      try {
+        const res = await fetch("/api/Restaurant/");
+
+        if (!res.ok) {
+          setEttermeink([]);
+          return;
+        }
+
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+          setEttermeink(data);
+          return;
+        }
+
+        if (Array.isArray(data.result)) {
+          setEttermeink(data.result);
+          return;
+        }
+
+        setEttermeink([]);
+      } catch {
+        setEttermeink([]);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Hiba:", err);
-        setLoading(false);
-      });
+      }
+    }
+
+    fetchRestaurants();
   }, []);
 
   return (
     <div className="rolunk-page">
-      <section className="about">
-        <div className="container">
-          <h1 className="page-title">Rólunk</h1>
-          <p className="page-lead">
-            A Pizzarenánál a cél egyszerű: olyan pizzát adni, amitől azt érzed,
-            “na ez az!”. Friss tészta, jól eltalált szósz, bőséges feltét, és
-            gyors kiszolgálás — akár beülsz, akár elvitelre kéred.
-          </p>
+      <section className="about-clean">
+        <div className="about-clean-container">
+          <div className="about-clean-images">
+            <img
+              src="https://cdn.pixabay.com/photo/2017/06/19/01/34/venice-2417879_1280.jpg"
+              alt="Étterem belső tér"
+              className="about-img about-img-large"
+            />
 
-          <div className="about-grid">
-            <div className="about-card">
-              <h2>Miért pont nálunk?</h2>
-              <p>
-                Nálunk nem kell kompromisszum: a minőség és a gyorsaság együtt
-                működik. A kedvenceket stabilan ugyanazzal az ízzel kapod...
-              </p>
-            </div>
+            <div className="about-clean-small-row">
+              <img
+                src="https://cdn.pixabay.com/photo/2021/10/30/12/50/woman-6754248_1280.jpg"
+                alt="Étel"
+                className="about-img about-img-small"
+              />
 
-            <div className="about-card">
-              <h2>Amit ígérünk</h2>
-              <ul className="promise">
-                <li><span className="dot" /> Friss alapanyagok, korrekt adagok</li>
-                <li><span className="dot" /> Gyors elkészítés, átlátható rendelés</li>
-                <li><span className="dot" /> Barátságos hangulat, több helyszín</li>
-              </ul>
+              <img
+                src="https://cdn.pixabay.com/photo/2019/06/18/10/46/platting-4282016_1280.jpg"
+                alt="Csapat"
+                className="about-img about-img-small"
+              />
             </div>
+          </div>
+
+          <div className="about-clean-content">
+            <h1>Rólunk</h1>
+            <h2>Egyszerűen jó pizza, korrekt minőségben</h2>
+
+            <p>
+              A Pizzarena célja egyszerű: jó pizzát készíteni gyorsan,
+              átláthatóan, felesleges körök nélkül. Friss alapanyagokkal
+              dolgozunk, és arra figyelünk, hogy minden rendelésnél ugyanazt a
+              minőséget kapd.
+            </p>
+
+            <p>
+              Nem bonyolítjuk túl. Egy helyet építünk, ahonnan nyugodtan
+              rendelsz, mert tudod, mire számíthatsz.
+            </p>
+
+            <Link to="/etlap" className="about-clean-btn nav__link">
+              Nézd meg az étlapot
+            </Link>
           </div>
         </div>
       </section>
@@ -59,32 +94,38 @@ export default function Rolunk() {
         <div className="container">
           <h2 className="section-title">Éttermeink</h2>
           <p className="section-lead">
-            Miskolc több pontján várunk, hogy élőben is átéld a Pizzarena hangulatot.
+            Miskolc több pontján várunk, hogy élőben is átéld a Pizzarena
+            hangulatot.
           </p>
 
           <div className="place-grid">
             {loading ? (
               <p>Betöltés...</p>
             ) : (
-              ettermeink.map((p) => (
-                <article className="place-card" key={p.id}> 
+              ettermeink.map((etterem) => (
+                <article className="place-card" key={etterem.id || etterem.Id}>
                   <div className="place-imgWrap">
-                    <img 
-                      className="place-img" 
-                      src={p.imageUrl && p.imageUrl.startsWith("http") ? p.imageUrl : "/images/etterem1.jpg"} 
-                      alt={p.name} 
+                    <img
+                      className="place-img"
+                      src={
+                        etterem.imageUrl && etterem.imageUrl.startsWith("http")
+                          ? etterem.imageUrl
+                          : "/images/etterem1.jpg"
+                      }
+                      alt={etterem.name || "Étterem"}
                     />
                   </div>
 
                   <div className="place-body">
-                    <h3 className="place-title">{p.name}</h3>
-                    {/* Itt megjelenítjük a címet is, mert a JSON-ben benne van */}
-                    <p className="place-address" style={{fontSize: "0.9rem", color: "#e67e22", marginBottom: "5px"}}>
-                      {p.address}
+                    <h3 className="place-title">{etterem.name || "-"}</h3>
+
+                    <p className="place-address">
+                      {etterem.address || "-"}
                     </p>
-                    <p className="place-desc">{p.description}</p>
-                    <p className="place-open">Nyitva: {p.openingHours}</p>
-                    <p className="place-open">Elérhetőség: {p.contactPhone}</p>
+
+                    <p className="place-desc">{etterem.description || "-"}</p>
+                    <p className="place-open">Nyitva: {etterem.openingHours || "-"}</p>
+                    <p className="place-open">Elérhetőség: {etterem.contactPhone || "-"}</p>
 
                     <div className="place-actions">
                       <button
@@ -94,6 +135,7 @@ export default function Rolunk() {
                       >
                         Ide rendelek
                       </button>
+
                       <button
                         className="btn btn-ghost"
                         type="button"
@@ -116,10 +158,16 @@ export default function Rolunk() {
             <div>
               <h2 className="cta-title">Készen állsz rendelni?</h2>
               <p className="cta-text">
-                Válassz kedvencedet az étlapról, és add le a rendelésed pár kattintással.
+                Válassz kedvencedet az étlapról, és add le a rendelésed pár
+                kattintással.
               </p>
             </div>
-            <button className="btn btn-primary" onClick={() => navigate("/rendeles")}>
+
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={() => navigate("/rendeles")}
+            >
               Add le a rendelésed!
             </button>
           </div>
