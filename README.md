@@ -138,9 +138,5 @@
 
 ---
 
-
-<h2>Licenc</h2>
-
-<p>
-  Ez a projekt oktatási célból készült.
-</p>
+# PizzAréna Github linkje: 
+(https://github.com/Ballam906/PizzArena)
