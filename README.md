@@ -54,15 +54,5 @@ A rendszer jelenleg 3 különböző éttermet kezel.
 
 ---
 
-## Használt technológiák
-
-* React (Frontend)
-* CSS
-* JavaScript
-* REST API
-* Python & Selenium (E2E Tesztelés)
-
----
-
 # PizzAréna Github linkje: 
 [https://github.com/Ballam906/PizzArena](https://github.com/Ballam906/PizzArena)
