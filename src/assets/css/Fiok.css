@@ -4,12 +4,11 @@
   padding: 24px;
   background: #f9f9f9;
   border-radius: 12px;
-  box-sizing: border-box;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
 .fiok-title {
-  margin: 0 0 20px 0;
+  margin: 0 0 20px;
   font-size: 28px;
   color: #222;
 }
@@ -56,7 +55,6 @@
   border: 1px solid #d9d9d9;
   border-radius: 8px;
   font-size: 15px;
-  box-sizing: border-box;
   outline: none;
 }
 
@@ -81,7 +79,7 @@
   margin-bottom: 15px;
   padding: 10px 14px;
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
 }
 
@@ -128,43 +126,17 @@
 
 .fiok-logout-btn {
   padding: 12px 20px;
-  background-color: #ff0000;
+  background-color: #d93636;
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .fiok-logout-btn:hover {
-  background-color: #ff0000;
-}
-
-@media (max-width: 768px) {
-  .fiok-wrapper {
-    margin: 20px 12px;
-    padding: 18px;
-  }
-
-  .fiok-title {
-    font-size: 24px;
-  }
-
-  .fiok-section {
-    padding: 14px;
-  }
-
-  .fiok-section h3 {
-    font-size: 18px;
-  }
-
-  .fiok-edit-btn,
-  .fiok-logout-btn {
-    width: 100%;
-  }
-
-  .fiok-section-header {
-    align-items: stretch;
-  }
+  background-color: #bf2f2f;
+  transform: translateY(-1px);
 }
 
 .fiok-password-area {
@@ -221,8 +193,8 @@
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
-  transition: grid-template-rows 0.35s ease, opacity 0.25s ease, margin-top 0.25s ease;
   margin-top: 0;
+  transition: grid-template-rows 0.35s ease, opacity 0.25s ease, margin-top 0.25s ease;
 }
 
 .fiok-password-form-wrap.open {
@@ -261,4 +233,32 @@
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
+}
+
+@media (max-width: 768px) {
+  .fiok-wrapper {
+    margin: 20px 12px;
+    padding: 18px;
+  }
+
+  .fiok-title {
+    font-size: 24px;
+  }
+
+  .fiok-section {
+    padding: 14px;
+  }
+
+  .fiok-section h3 {
+    font-size: 18px;
+  }
+
+  .fiok-edit-btn,
+  .fiok-logout-btn {
+    width: 100%;
+  }
+
+  .fiok-section-header {
+    align-items: stretch;
+  }
 }

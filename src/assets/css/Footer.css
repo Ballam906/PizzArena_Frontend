@@ -4,7 +4,6 @@
   padding: 50px 20px 20px;
   margin-top: 60px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  overflow-x: hidden;
 }
 
 .footer-container {
@@ -52,14 +51,15 @@
 }
 
 .footer-section a {
+  display: inline-block;
   color: #cfcfcf;
   text-decoration: none;
-  transition: 0.25s ease;
+  transition: color 0.25s ease, transform 0.25s ease;
 }
 
 .footer-section a:hover {
   color: #d84b2a;
-  padding-left: 4px;
+  transform: translateX(4px);
 }
 
 .footer-brand p {

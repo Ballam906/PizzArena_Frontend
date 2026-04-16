@@ -1,161 +1,162 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support.ui import Select
 import time
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-wait = WebDriverWait(driver, 10)
+wait = WebDriverWait(driver, 12)
 
-def pause():
-    time.sleep(1.5)
-    
-def scroll_smooth():
-    height = driver.execute_script("return document.body.scrollHeight")
+def pause(seconds=1.2):
+    time.sleep(seconds)
 
-    current = 0
-    while current < height:
-        driver.execute_script(f"""
-            window.scrollTo({{
-                top: {current},
-                behavior: 'smooth'
-            }});
-        """)
-        current += 250
-        time.sleep(1.2)
+def slow_scroll_to(y_target, step=120, delay=0.08):
+    current_y = driver.execute_script("return window.pageYOffset;")
 
-    time.sleep(1)
+    if current_y < y_target:
+        positions = range(int(current_y), int(y_target), step)
+    else:
+        positions = range(int(current_y), int(y_target), -step)
 
-    # vissza tetejére
-    driver.execute_script("""
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    """)
-    time.sleep(1)
+    for y in positions:
+        driver.execute_script(f"window.scrollTo(0, {y});")
+        time.sleep(delay)
+
+    driver.execute_script(f"window.scrollTo(0, {y_target});")
+    time.sleep(0.2)
+
+def scroll_to_element(element, offset=-120):
+    y = driver.execute_script(
+        "const rect = arguments[0].getBoundingClientRect();"
+        "return rect.top + window.pageYOffset + arguments[1];",
+        element,
+        offset
+    )
+    slow_scroll_to(y)
+
+def safe_click(element):
+    scroll_to_element(element)
+    pause(0.4)
+    driver.execute_script("arguments[0].click();", element)
+
+def clear_and_type(element, text, delay=0.06):
+    element.clear()
+    pause(0.2)
+    for char in text:
+        element.send_keys(char)
+        time.sleep(delay)
+
+def wait_and_find(by, value):
+    return wait.until(EC.presence_of_element_located((by, value)))
+
+def wait_and_clickable(by, value):
+    return wait.until(EC.element_to_be_clickable((by, value)))
 
 try:
-    # 1. Kezdőlap
     driver.get("http://localhost:5173")
     driver.maximize_window()
+    pause(2)
+
+    rendeles_link = wait_and_clickable(By.LINK_TEXT, "Add le a rendelésed!")
+    safe_click(rendeles_link)
+    pause(1.5)
+
+    reg_button = wait_and_clickable(By.XPATH, "//button[text()='Regisztráció']")
+    safe_click(reg_button)
+    pause(1.2)
+
+    username_input = wait_and_find(By.XPATH, "//input[@placeholder='pl. Pizzafan123']")
+    email_input = wait_and_find(By.XPATH, "//input[@placeholder='valami@gmail.com']")
+    password_input = wait_and_find(By.XPATH, "//input[@placeholder='••••••••']")
+
+    clear_and_type(username_input, "tesztuser4")
+    clear_and_type(email_input, "teszt@email.com")
+    clear_and_type(password_input, "Teszt123!")
+    pause(1)
+
+    reg_submit = wait_and_clickable(By.XPATH, "//form[@id='register-form']//button[@type='submit']")
+    safe_click(reg_submit)
+    pause(2)
+
+    login_tab = wait_and_clickable(By.XPATH, "//button[text()='Bejelentkezés']")
+    safe_click(login_tab)
+    pause(1.2)
+
+    login_username = wait_and_find(By.XPATH, "//input[@placeholder='pl. Pizzafan123']")
+    login_password = wait_and_find(By.XPATH, "//input[@placeholder='••••••••']")
+
+    clear_and_type(login_username, "tesztuser4")
+    clear_and_type(login_password, "Teszt123!")
+    pause(1)
+
+    login_button = wait_and_clickable(By.XPATH, "//button[text()='Belépés']")
+    safe_click(login_button)
     pause()
 
-    # # 2. Görgetés a kezdőlapon
-    scroll_smooth()
-    pause()
+    categories = ["Pizza", "Levesek", "Desszertek"]
 
-    # # 3. Rólunk oldal
-    rolunk_gomb = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Éttermeink")))
-    rolunk_gomb.click()
-    scroll_smooth()
-    pause()
+    for cat in categories:
+        category_button = wait_and_clickable(By.XPATH, f"//button[text()='{cat}']")
+        safe_click(category_button)
+        pause(1.5)
 
-    # 4. Rendelés oldal
-    rendeles_gomb = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Add le a rendelésed!")))
-    rendeles_gomb.click()
-    pause()
-    
-    reg_button = driver.find_element(By.XPATH, "//button[text()='Regisztráció']")
-    reg_button.click()
-    pause()
+        add_button = wait_and_clickable(By.XPATH, "//button[contains(text(),'Kosárba')]")
+        safe_click(add_button)
+        pause(1.5)
 
-    # 6. Regisztrációs mezők
-    username_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='pl. Pizzafan123']")))
-    email_input = driver.find_element(By.XPATH, "//input[@placeholder='valami@gmail.com']")
-    password_input = driver.find_element(By.XPATH, "//input[@placeholder='••••••••']")
+    kosar_button = wait_and_clickable(By.CLASS_NAME, "etlap-cart-link")
+    safe_click(kosar_button)
+    pause(2)
 
-    username_input.send_keys("tesztuser4")
-    email_input.send_keys("teszt@email.com")
-    password_input.send_keys("Teszt123!")
-    pause()
+    restaurant_select = wait_and_find(By.XPATH, "//select[contains(@class,'kosar-form-input')]")
+    nev_input = wait_and_find(By.XPATH, "//input[@placeholder='Név']")
+    telefon_input = wait_and_find(By.XPATH, "//input[@placeholder='Telefonszám']")
+    email_input = wait_and_find(By.XPATH, "//input[@placeholder='Email']")
+    varos_input = wait_and_find(By.XPATH, "//input[@placeholder='Város']")
+    iranyitoszam_input = wait_and_find(By.XPATH, "//input[@placeholder='Irányítószám']")
+    utca_input = wait_and_find(By.XPATH, "//input[@placeholder='Utca, házszám']")
+    egyeb_input = wait_and_find(By.XPATH, "//textarea[@placeholder='Egyéb (emelet, ajtó, kapukód, stb.)']")
 
-    reg_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//form[@id='register-form']//button[@type='submit']")))
-    reg_button.click()
-    pause()
-
-    # 7. Bejelentkezés
-    login_tab = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Bejelentkezés']")))
-    login_tab.click()
-    pause()
-
-    login_username = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='pl. Pizzafan123']")))
-    login_password = driver.find_element(By.XPATH, "//input[@placeholder='••••••••']")
-
-    login_username.send_keys("tesztuser4")
-    login_password.send_keys("Teszt123!")
-    pause()
-
-    login_button = driver.find_element(By.XPATH, "//button[text()='Belépés']")
-    login_button.click()
-    pause()
-
-    # 8. Első étel kosárba
-    rendel_gomb = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Kosárba')]")))
-    rendel_gomb.click()
-    pause()
-
-    # 9. Kosár megnyitása
-    kosar_gomb = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[contains(text(),'🛒')]")))
-    kosar_gomb.click()
-    pause()
-
-
-
-    # 10. Hibás kitöltés
-    restaurant_select = wait.until(
-        EC.presence_of_element_located((By.XPATH, "//select[contains(@class,'kosar-form-input')]"))
-    )
-
-    nev_input = driver.find_element(By.XPATH, "//input[@placeholder='Név']")
-    telefon_input = driver.find_element(By.XPATH, "//input[@placeholder='Telefonszám']")
-    email_input = driver.find_element(By.XPATH, "//input[@placeholder='Email']")
-    varos_input = driver.find_element(By.XPATH, "//input[@placeholder='Város']")
-    iranyitoszam_input = driver.find_element(By.XPATH, "//input[@placeholder='Irányítószám']")
-    utca_input = driver.find_element(By.XPATH, "//input[@placeholder='Utca, házszám']")
-    egyeb_input = driver.find_element(By.XPATH, "//textarea[@placeholder='Egyéb (emelet, ajtó, kapukód, stb.)']")
-
-    # étterem kiválasztása (ne az első "Válassz éttermet" opció maradjon)
+    scroll_to_element(restaurant_select)
+    pause(0.6)
     Select(restaurant_select).select_by_index(1)
-    pause()
+    pause(1.2)
 
-    # szándékosan hibás adatok
-    nev_input.send_keys("a")
-    telefon_input.send_keys("123")
-    email_input.send_keys("rosszemail")
-    varos_input.send_keys("x")
-    iranyitoszam_input.send_keys("11")
-    utca_input.send_keys("y")
-    egyeb_input.send_keys("teszt")
-    pause()
+    clear_and_type(nev_input, "a")
+    clear_and_type(telefon_input, "123")
+    clear_and_type(email_input, "rosszemail")
+    clear_and_type(varos_input, "x")
+    clear_and_type(iranyitoszam_input, "11")
+    clear_and_type(utca_input, "y")
+    clear_and_type(egyeb_input, "teszt")
+    pause(1)
 
-    rendeles_gomb = driver.find_element(By.XPATH, "//button[contains(text(),'Rendelés leadása')]")
-    rendeles_gomb.click()
-    pause()
+    rendeles_button = wait_and_clickable(By.XPATH, "//button[contains(text(),'Rendelés leadása')]")
+    safe_click(rendeles_button)
+    pause(2)
 
-    # 11. Javított kitöltés
-    nev_input.clear()
-    telefon_input.clear()
-    email_input.clear()
-    varos_input.clear()
-    iranyitoszam_input.clear()
-    utca_input.clear()
-    egyeb_input.clear()
+    clear_and_type(nev_input, "Teszt Elek")
+    clear_and_type(telefon_input, "06301234567")
+    clear_and_type(email_input, "tesztelek@email.com")
+    clear_and_type(varos_input, "Budapest")
+    clear_and_type(iranyitoszam_input, "1117")
+    clear_and_type(utca_input, "Teszt utca 12")
+    clear_and_type(egyeb_input, "2. emelet, 5-ös ajtó")
+    pause(1)
 
-    nev_input.send_keys("Teszt Elek")
-    telefon_input.send_keys("06301234567")
-    email_input.send_keys("tesztelek@email.com")
-    varos_input.send_keys("Budapest")
-    iranyitoszam_input.send_keys("1117")
-    utca_input.send_keys("Teszt utca 12")
-    egyeb_input.send_keys("2. emelet, 5-ös ajtó")
-    pause()
+    safe_click(rendeles_button)
+    pause(3)
 
-    rendeles_gomb.click()
-    pause()
+    fiok_gomb = wait_and_clickable(By.LINK_TEXT, "Fiók")
+    safe_click(fiok_gomb)
+    pause(2)
+
+    kijelentkezes_gomb = wait_and_clickable(By.XPATH, "//button[contains(text(),'Kijelentkez')]")
+    safe_click(kijelentkezes_gomb)
+    pause(2)
+
     print("A teszt lefutott.")
 
 except Exception as e:

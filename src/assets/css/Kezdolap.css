@@ -17,11 +17,11 @@ body {
 
 .hero {
   position: relative;
-  min-height: 45vh;
+  min-height: 65vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 2rem;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 4rem 3rem;
   background-size: cover;
   background-position: center;
   border-bottom: 1px solid #e3e3e3;
@@ -30,6 +30,12 @@ body {
 .hero__overlay {
   position: absolute;
   inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.7),
+    rgba(0, 0, 0, 0.2),
+    transparent
+  );
 }
 
 .hero__content {
@@ -38,10 +44,25 @@ body {
   text-align: center;
 }
 
+.hero__content--left {
+  position: relative;
+  max-width: 500px;
+  text-align: left;
+  color: #fff;
+}
+
+.hero__title {
+  margin-bottom: 1rem;
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
 .hero__subtitle {
-  font-size: 1rem;
-  color: var(--color-text-muted);
   margin-bottom: 1.5rem;
+  color: #ddd;
+  line-height: 1.6;
+  font-size: 1rem;
 }
 
 .hero__actions {
@@ -55,12 +76,12 @@ body {
   border-radius: 999px;
   text-decoration: none;
   font-weight: 600;
-  transition: 0.2s;
+  transition: background-color 0.2s ease, color 0.2s ease, filter 0.2s ease;
 }
 
 .btn--primary {
   background: var(--color-primary);
-  color: white;
+  color: #fff;
 }
 
 .btn--primary:hover {
@@ -81,25 +102,17 @@ body {
 }
 
 .section__title {
+  margin-bottom: 0.4rem;
   text-align: center;
   font-size: 1.9rem;
-  margin-bottom: 0.4rem;
   color: var(--color-text);
 }
 
 .section__subtitle {
-  text-align: center;
   max-width: 600px;
   margin: 0 auto 2.5rem;
+  text-align: center;
   color: var(--color-text-muted);
-}
-
-.section__title--light {
-  color: white;
-}
-
-.section__subtitle--light {
-  color: #ddd;
 }
 
 .chef-grid,
@@ -117,7 +130,7 @@ body {
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
-  transition: 0.2s;
+  transition: transform 0.2s ease;
 }
 
 .card:hover {
@@ -125,7 +138,7 @@ body {
 }
 
 .card__image-wrapper {
-  aspect-ratio: 4/3;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
 }
 
@@ -140,8 +153,8 @@ body {
 }
 
 .card__title {
-  font-size: 1.2rem;
   margin-bottom: 0.4rem;
+  font-size: 1.2rem;
   color: var(--color-text);
 }
 
@@ -150,8 +163,8 @@ body {
   line-height: 1.5;
 }
 
-.card__tel{
-   color: black;
+.card__tel {
+  color: #000;
   line-height: 1.5;
 }
 
@@ -188,9 +201,9 @@ body {
 }
 
 .feature__text h2 {
+  margin-bottom: 1rem;
   color: var(--color-text);
   font-size: 2rem;
-  margin-bottom: 1rem;
 }
 
 .feature__text p {
@@ -204,151 +217,40 @@ body {
   padding: 4rem 0;
 }
 
+.carousel__slide {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
 .carousel__slide p {
   font-size: 1.8rem;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--color-text);
 }
 
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
+
 .carousel__controls button {
+  width: 2rem;
+  height: 2rem;
+  margin: 1rem 0.5rem;
   background: none;
   border: 1px solid var(--color-primary);
   color: var(--color-primary);
   border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
   font-size: 1.5rem;
-  margin: 1rem 0.5rem;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .carousel__controls button:hover {
   background: var(--color-primary-soft);
-}
-
-.footer {
-  background: #333;
-  color: #fff;
-  padding: 3rem 0;
-}
-
-.footer__grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 1.5rem;
-}
-
-.footer h3 {
-  margin-bottom: 0.8rem;
-}
-
-.footer p {
-  margin: 0.3rem 0;
-}
-
-
-@media (max-width: 900px) {
-  .chef-grid,
-  .locations-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .feature,
-  .feature--reverse {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .feature img, .feature__text {
-    width: 100%;
-  }
-}
-
-@media (max-width: 600px) {
-  .hero {
-    min-height: 40vh;
-    padding: 2rem 1.5rem;
-  }
-
-  .chef-grid,
-  .locations-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .container {
-    padding-inline: 1.25rem;
-  }
-}.carousel__slide {
-  transition: opacity 0.3s ease-in-out;
-  opacity: 1;
-}
-.fade-in {
-  opacity: 1;
-}
-.fade-out {
-  opacity: 0;
-}
-.hero {
-  position: relative;
-  min-height: 65vh; /* nagyobb, hogy legyen tér */
-  display: flex;
-  align-items: flex-end; /* ALULRA tol */
-  justify-content: flex-start; /* BALRA tol */
-  padding: 4rem 3rem;
-  background-size: cover;
-  background-position: center;
-}
-
-/* sötét overlay hogy látszódjon a szöveg */
-.hero__overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.7),
-    rgba(0,0,0,0.2),
-    transparent
-  );
-}
-
-/* BAL ALSÓ BLOKK */
-.hero__content--left {
-  position: relative;
-  max-width: 500px;
-  text-align: left;
-  color: white;
-}
-
-/* NAGY CÍM */
-.hero__title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  letter-spacing: 2px;
-  margin-bottom: 1rem;
-}
-
-/* SZÖVEG */
-.hero__subtitle {
-  color: #ddd;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-}
-
-/* MOBIL */
-@media (max-width: 600px) {
-  .hero {
-    padding: 2rem 1.5rem;
-    min-height: 65vh;
-  }
-
-  .hero__title {
-    font-size: 2.2rem;
-  }
-
-  .hero__content--left {
-    max-width: 100%;
-  }
 }
 
 .chef-note {
@@ -371,6 +273,57 @@ body {
 }
 
 .restaurant-address {
-  font-weight: bold;
+  font-weight: 700;
   color: #ffcc00;
+}
+
+@media (max-width: 900px) {
+  .chef-grid,
+  .locations-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .feature,
+  .feature--reverse {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .feature img,
+  .feature__text {
+    width: 100%;
+  }
+
+  .about-clean-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .hero__title {
+    font-size: 2.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: 65vh;
+    padding: 2rem 1.5rem;
+  }
+
+  .hero__title {
+    font-size: 2.2rem;
+  }
+
+  .hero__content--left {
+    max-width: 100%;
+  }
+
+  .chef-grid,
+  .locations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .container {
+    padding-inline: 1.25rem;
+  }
 }

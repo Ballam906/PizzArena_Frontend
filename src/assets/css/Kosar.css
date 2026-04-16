@@ -27,9 +27,9 @@
 }
 
 .kosar-alert {
+  margin-bottom: 20px;
   padding: 14px 16px;
   border-radius: 14px;
-  margin-bottom: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -119,16 +119,16 @@
 }
 
 .kosar-product-name {
+  margin-bottom: 4px;
   font-weight: 700;
   font-size: 1.05rem;
   color: #1f1f1f;
-  margin-bottom: 4px;
 }
 
 .kosar-product-price {
+  margin-bottom: 12px;
   color: #666;
   font-size: 14px;
-  margin-bottom: 12px;
 }
 
 .kosar-product-actions {
@@ -146,7 +146,7 @@
   background: #fff;
   cursor: pointer;
   font-weight: 700;
-  transition: 0.2s;
+  transition: background-color 0.2s ease;
 }
 
 .kosar-qty-btn:hover {
@@ -192,8 +192,7 @@
   background: #fcfcfc;
   font-size: 0.95rem;
   outline: none;
-  box-sizing: border-box;
-  transition: 0.2s;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .kosar-form-input:focus {
@@ -252,13 +251,9 @@
 }
 
 .kosar-btn {
-  transition: 0.2s;
   font-weight: 700;
   cursor: pointer;
-}
-
-.kosar-btn:hover {
-  opacity: 0.92;
+  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 .kosar-btn-light {
@@ -266,6 +261,10 @@
   border-radius: 12px;
   border: 1px solid #ddd;
   background: #fafafa;
+}
+
+.kosar-btn-light:hover {
+  background: #f2f2f2;
 }
 
 .kosar-btn-delete {
@@ -277,12 +276,20 @@
   color: #b42323;
 }
 
+.kosar-btn-delete:hover {
+  background: #ffd6d6;
+}
+
 .kosar-btn-back {
   padding: 13px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: transparent;
   color: #fff;
+}
+
+.kosar-btn-back:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .kosar-btn-order {
@@ -294,10 +301,18 @@
   font-weight: 800;
 }
 
+.kosar-btn-order:hover {
+  background: #f2f2f2;
+}
+
 .kosar-btn-order-disabled {
   background: #bdbdbd;
   color: #666;
   cursor: not-allowed;
+}
+
+.kosar-btn-order-disabled:hover {
+  background: #bdbdbd;
 }
 
 @media (max-width: 992px) {

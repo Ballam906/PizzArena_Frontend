@@ -89,6 +89,28 @@ export default function Rolunk() {
           </div>
         </div>
       </section>
+      
+      <section className="cta">
+        <div className="container">
+          <div className="cta-card">
+            <div>
+              <h2 className="cta-title">Készen állsz rendelni?</h2>
+              <p className="cta-text">
+                Válassz kedvencedet az étlapról, és add le a rendelésed pár
+                kattintással.
+              </p>
+            </div>
+
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={() => navigate("/rendeles")}
+            >
+              Add le a rendelésed!
+            </button>
+          </div>
+        </div>
+      </section>
 
       <section className="places">
         <div className="container">
@@ -148,28 +170,6 @@ export default function Rolunk() {
                 </article>
               ))
             )}
-          </div>
-        </div>
-      </section>
-
-      <section className="cta">
-        <div className="container">
-          <div className="cta-card">
-            <div>
-              <h2 className="cta-title">Készen állsz rendelni?</h2>
-              <p className="cta-text">
-                Válassz kedvencedet az étlapról, és add le a rendelésed pár
-                kattintással.
-              </p>
-            </div>
-
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={() => navigate("/rendeles")}
-            >
-              Add le a rendelésed!
-            </button>
           </div>
         </div>
       </section>
