@@ -60,22 +60,23 @@ function Fiokosszesito() {
     }
   }
 
-  function getOrderTotal(items) {
-    if (!items || items.length === 0) {
-      return 0;
-    }
-
-    let total = 0;
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      const itemPrice = item.itemPrice || 0;
-      const piece = item.piece || 0;
-      total += itemPrice * piece;
-    }
-
-    return total;
+function getOrderTotal(items, shippingCost = 0) {
+  if (!items || items.length === 0) {
+    return 0;
   }
+
+  let total = 0;
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    const itemPrice = item.itemPrice || 0;
+    const piece = item.piece || 0;
+    total += itemPrice * piece;
+  }
+
+  return total + shippingCost; 
+}
+
 
   function getUserName(data) {
     return (
@@ -373,7 +374,7 @@ function Fiokosszesito() {
                       {order.orderTime ? new Date(order.orderTime).toLocaleString() : "-"}
                     </td>
                     <td>{order.customerName || "-"}</td>
-                    <td>{getOrderTotal(order.orderItems)} Ft</td>
+                    <td>{getOrderTotal(order.orderItems, 490)} Ft</td>
                     <td>{getStatusText(order.status)}</td>
                   </tr>
                 ))}
