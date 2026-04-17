@@ -51,7 +51,7 @@ A fiók oldalon a felhasználók bejelentkezhetnek, illetve hozzáférhetnek saj
 ![Fiók oldal](images/account.png)
 
 ## Éttermek
-A rendszer jelenleg 3 különböző éttermet kezel.
+A weboldal képes egyszerre több étterem kezelésére is.
 
 ---
 
