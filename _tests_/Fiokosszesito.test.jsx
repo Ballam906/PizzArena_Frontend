@@ -86,7 +86,7 @@ test("rendelés megjelenik és státusz szöveggé alakul", async () => {
     expect(screen.getByText("Feldolgozás alatt")).toBeInTheDocument();
   });
 
-  expect(screen.getByText("2000 Ft")).toBeInTheDocument();
+  expect(screen.getByText("2490 Ft")).toBeInTheDocument();
 });
 
 test("ha nincs userData, átirányít a rendelés oldalra", () => {

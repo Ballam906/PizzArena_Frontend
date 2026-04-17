@@ -1,4 +1,5 @@
 **Itt található a frontend forráskódja, a hozzá tartozó tesztek, valamint a Python Selenium webdriver teszt is!**
+Konfiguráció:  A vite.config.js fájlban állítható be az adatbázis kapcsolat. 
 
 # PizzAréna Weboldal
 
