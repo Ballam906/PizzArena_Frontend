@@ -6,13 +6,12 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:5085",
+        target: "https://localhost:7218", 
         changeOrigin: true,
         secure: false,
       },
     },
   },
-
   test: {
     environment: "jsdom",
     globals: true

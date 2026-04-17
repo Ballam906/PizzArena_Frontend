@@ -20,7 +20,7 @@ export async function postOrder(data) {
     throw new Error("Nincs token a localStorage-ben.");
   }
 
-  const res = await fetch("https://localhost:7218/api/Order/FullOrder", {
+  const res = await fetch("/api/Order/FullOrder", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

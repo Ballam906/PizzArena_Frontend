@@ -68,20 +68,21 @@ export default function Rolunk() {
           </div>
 
           <div className="about-clean-content">
-            <h1>Rólunk</h1>
-            <h2>Egyszerűen jó pizza, korrekt minőségben</h2>
+          <h1>Rólunk</h1>
+          <h2>Kiváló vendéglátás, kiváló minőségben</h2>
 
-            <p>
-              A Pizzarena célja egyszerű: jó pizzát készíteni gyorsan,
-              átláthatóan, felesleges körök nélkül. Friss alapanyagokkal
-              dolgozunk, és arra figyelünk, hogy minden rendelésnél ugyanazt a
-              minőséget kapd.
-            </p>
+          <p>
+            A PizzAréna célja egyszerű: emlékezetes és incsiklandó
+            fogásokat készíteni gyorsan. Válogatott, friss 
+            alapanyagokkal dolgozunk, és arra figyelünk, hogy minden egyes 
+            tányérnál ugyanazt a magas színvonalat kapd.
+          </p>
 
-            <p>
-              Nem bonyolítjuk túl. Egy helyet építünk, ahonnan nyugodtan
-              rendelsz, mert tudod, mire számíthatsz.
-            </p>
+          <p>
+            Nem bonyolítjuk túl a dolgokat. Egy olyan helyet építünk, ahonnan 
+            bátran rendelsz vagy hozzánk bármikor beülsz, mert tudod, hogy nálunk 
+            mindig a megszokott minőség vár.
+          </p>
 
             <Link to="/etlap" className="about-clean-btn nav__link">
               Nézd meg az étlapot
