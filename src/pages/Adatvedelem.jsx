@@ -19,9 +19,9 @@ function Adatvedelem() {
         <br />
         Székhely: Magyarország
         <br />
-        E-mail: info@pizzarena.hu
+        E-mail: pelda@pizzarena.com
         <br />
-        Telefonszám: +36 30 123 4567
+        Telefonszám: +36 00 000 0000
       </p>
 
       <h2>2. A kezelt személyes adatok köre</h2>
@@ -135,9 +135,9 @@ function Adatvedelem() {
       <p>
         Kérdés, észrevétel vagy adatvédelmi kérelem esetén:
         <br />
-        E-mail: info@pizzarena.hu
+        E-mail: pelda@pizzarena.com
         <br />
-        Telefonszám: +36 30 123 4567
+        Telefonszám: +36 00 000 00000
       </p>
 
       <p className="adatvedelem-frissites">
