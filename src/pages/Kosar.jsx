@@ -238,7 +238,8 @@ export default function Kosar() {
       items: items.map((item) => ({
         productId: item.id,
         piece: item.qty,
-        itemPrice: Number(item.price) || 0
+        itemPrice: Number(item.price) || 0,
+        itemName: item.name
       }))
     };
 
